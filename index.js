@@ -10,10 +10,10 @@ function calculateFrameProgress(current, initial, target) {
 	const props = {
 		current: current.getHistogram(),
 		initial: initial.getHistogram(),
-		target: target.getHistogram(),
+		target: target.getHistogram()
 	};
 
-	return Promise.props(props).then(function(results) {
+	return Promise.props(props).then(function (results) {
 		let total = 0;
 		let match = 0;
 
@@ -31,7 +31,7 @@ function calculateFrameProgress(current, initial, target) {
 			}
 		}
 
-		return Math.floor(match/ total * 100);
+		return Math.floor(match / total * 100);
 	});
 }
 
@@ -40,10 +40,25 @@ function calculateVisualProgress(frames) {
 	const target = frames[frames.length - 1];
 
 	return Promise.map(frames, f => calculateFrameProgress(f, initial, target))
-		.map((progress, index) => ({
-			progress,
-			frame: frames[index],
-		}));
+		.map(function (progress, index) {
+			frames[index].setProgress(progress);
+			return frames;
+		});
+}
+
+function getSpeedIndex(frames) {
+	let speedIndex = 0;
+	let lastTs = frames[0].getTimeStamp();
+	let lastProgress = frames[0].getProgress();
+
+	frames.forEach(function (frame) {
+		const elapsed = frame.getTimeStamp() - lastTs;
+		speedIndex += elapsed * (1 - lastProgress);
+		lastTs = frame.getTimeStamp();
+		lastProgress = frame.getProgress() / 100;
+	});
+
+	return speedIndex;
 }
 
 function extractFramesFromTimeline(timelinePath) {
@@ -53,17 +68,18 @@ function extractFramesFromTimeline(timelinePath) {
 	const rawFrames = model.filmStripModel().frames();
 
 	return Promise.map(rawFrames, f => f.imageDataPromise())
-		.map(function(img, index) {
+		.map(function (img, index) {
 			const imgBuff = new Buffer(img, 'base64');
 			return frame(imgBuff, rawFrames[index].timestamp);
 		});
 }
 
-module.exports = function (str, opts) {
+module.exports = function () {
 	const timelinePath = '/Users/p.dartus/Downloads/techcrunch.json';
 	return extractFramesFromTimeline(timelinePath)
 		.then(calculateVisualProgress)
 		.then(function (res) {
-			console.log(res);
+			const frames = res;
+			console.log(frames, getSpeedIndex(res));
 		});
 };
