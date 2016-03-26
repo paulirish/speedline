@@ -26,6 +26,8 @@
     ""
   ],
   "dependencies": {
+    "bluebird": "^3.3.4",
+    "devtools-timeline-model": "^1.0.16",
     "meow": "^3.7.0"
   },
   "devDependencies": {

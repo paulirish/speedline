@@ -1,8 +1,9 @@
 'use strict';
 
-const getPixels = require('get-pixels');
-
-const PIXEL_TOLERENCY = 5;
+const fs = require('fs');
+const Promise = require('bluebird');
+const getPixels =  Promise.promisify(require('get-pixels'));
+const DevtoolsTimelineModel = require('devtools-timeline-model');
 
 function getHistograms(img) {
 	const createHistogramArray = function() {
@@ -65,8 +66,38 @@ function calculateVisualProgress(frames) {
 	});
 }
 
-module.exports = function (str, opts) {
-	getPixels('./test-img.png', function(err, res) {
-		console.log(getHistograms(res));
+function convertPNGToPixels(buf) {
+	return getPixels(buf, 'image/png');
+}
+
+function extractFramesFromTimeline(timelinePath) {
+	const trace = fs.readFileSync(timelinePath, 'utf-8');
+	const model = new DevtoolsTimelineModel(trace);
+
+	const rawFrames = model.filmStripModel().frames();
+	const imageDataPromises = rawFrames.map(frame => frame.imageDataPromise());
+
+	return Promise.all(imageDataPromises).then(function(imageData) {
+		return rawFrames.map(function(frame, index) {
+			return {
+				frame: new Buffer(imageData[index], 'base64'),
+				timestamp: frame.timestamp,
+			};
+		});
 	})
+}
+
+module.exports = function (str, opts) {
+	const extract = extractFramesFromTimeline('/Users/p.dartus/Downloads/techcrunch.json');
+
+	extract.then(function(frames) {
+		return Promise.map(frames, function(f) {
+			convertPNGToPixels(f.frame).then(function(pixels) {
+				console.log('coucou');
+			});
+		});
+	})
+	// getPixels('./test-img.png', function(err, res) {
+	// 	console.log(getHistograms(res));
+	// })
 };
