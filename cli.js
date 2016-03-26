@@ -17,4 +17,6 @@ var cli = meow([
 	'  ponies & rainbows'
 ]);
 
-console.log(speedIndex(cli.input[0] || 'unicorns'));
+speedIndex()
+	.then(console.log)
+	.then(console.error);

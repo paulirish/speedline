@@ -25,7 +25,11 @@ function convertPixelsToHistogram(img) {
 		for (let i = 0; i < width; i++) {
 			for (let j = 0; j < height; j++) {
 				const pixelValue = img.get(i, j, channel);
-				histograms[channel][pixelValue]++;
+
+        // Erase pixels considered as white
+        if (img.get(i, j, 0) < 249 && img.get(i, j, 1) < 249 && img.get(i, j, 2) < 249) {
+          histograms[channel][pixelValue]++;
+        }
 			}
 		}
 	}
@@ -33,22 +37,25 @@ function convertPixelsToHistogram(img) {
 	return histograms;
 }
 
-function conertPNGToHistogram(image) {
+function conertPNGToHistogram(buf) {
   return getPixels(buf, 'image/png')
     .then(convertPixelsToHistogram);
 }
 
 function frame(image, ts) {
+
+  let _histogram;
+
   return {
     getHistogram: function() {
       return new Promise(function(resolve, reject) {
-        if (this._histogram) {
-          return resolve(this._histogram);
+        if (_histogram) {
+          return resolve(_histogram);
         }
 
-        return conertPNGToHistogram(image).then(function(histogram) {
-          this._histogram = histogram;
-          return histogram;
+        conertPNGToHistogram(image).then(function(histogram) {
+          _histogram = histogram;
+          return resolve(_histogram);
         })
       });
     },
