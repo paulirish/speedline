@@ -1,7 +1,7 @@
 import test from 'ava';
 import fs from 'fs-promise';
 
-import frame from '../src/frame';
+import frame from '../lib/frame';
 
 const DEFAULT_IMAGE = '';
 const DEFAULT_TS = new Date();
