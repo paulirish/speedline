@@ -6,7 +6,7 @@ import frame from '../lib/frame';
 import speedIndex from '../lib/speed-index';
 
 function calculateVisualProgressFromImages(images = [], delay = 1000) {
-	const baseTs = new Date();
+	const baseTs = new Date().getTime();
 
 	return Promise.map(images, imgPath => fs.readFile(imgPath))
 		.map((img, i) => frame.create(img, baseTs + i * delay))
@@ -40,4 +40,15 @@ test('visual progress should have 0 and 100 for different images', t => {
 		t.same(frames[0].getProgress(), 0);
 		t.same(frames[1].getProgress(), 100);
 	});
+});
+
+test('speed index calculate teh right value', t => {
+	return calculateVisualProgressFromImages([
+		'./assets/Solid_black.png',
+		'./assets/grayscale.png'
+	])
+		.then(speedIndex.calculateSpeedIndex)
+		.then(speedIndex => {
+			t.same(speedIndex, 1000);
+		});
 });

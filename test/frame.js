@@ -4,7 +4,7 @@ import fs from 'fs-promise';
 import frame from '../lib/frame';
 
 const DEFAULT_IMAGE = '';
-const DEFAULT_TS = new Date();
+const DEFAULT_TS = new Date().getTime();
 
 test('getTimeStamp returns the right timestamps', t => {
 	const f = frame.create(DEFAULT_IMAGE, DEFAULT_TS);
@@ -39,7 +39,7 @@ test('frames can set and retrieve progress', t => {
 	t.same(PROGRESS, f.getProgress());
 });
 
-test('extract frames from timeline should returns an array of frames', t => {
+test.skip('extract frames from timeline should returns an array of frames', t => {
 	return frame.extractFramesFromTimeline('./assets/nyt.json')
 		.then(frames => {
 			t.ok(Array.isArray(frames), 'Frames is not an array');
