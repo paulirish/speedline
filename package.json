@@ -28,6 +28,7 @@
   "dependencies": {
     "bluebird": "^3.3.4",
     "devtools-timeline-model": "^1.0.16",
+    "get-pixels": "^3.3.0",
     "meow": "^3.7.0"
   },
   "devDependencies": {
