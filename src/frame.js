@@ -1,7 +1,9 @@
 'use strict';
 
+const fs = require('fs');
 const Promise = require('bluebird');
 const getPixels = Promise.promisify(require('get-pixels'));
+const DevtoolsTimelineModel = require('devtools-timeline-model');
 
 function convertPixelsToHistogram(img) {
 	const createHistogramArray = function () {
@@ -42,6 +44,19 @@ function conertPNGToHistogram(buf) {
     .then(convertPixelsToHistogram);
 }
 
+function extractFramesFromTimeline(timelinePath) {
+	const trace = fs.readFileSync(timelinePath, 'utf-8');
+
+	const model = new DevtoolsTimelineModel(trace);
+	const rawFrames = model.filmStripModel().frames();
+
+	return Promise.map(rawFrames, f => f.imageDataPromise())
+		.map(function (img, index) {
+			const imgBuff = new Buffer(img, 'base64');
+			return frame(imgBuff, rawFrames[index].timestamp);
+		});
+}
+
 function frame(image, ts) {
 	let _histogram = null;
 	let _progress = null;
@@ -75,4 +90,7 @@ function frame(image, ts) {
 	};
 }
 
-module.exports = frame;
+module.exports = {
+	extractFramesFromTimeline,
+	create: frame
+};

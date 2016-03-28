@@ -1,50 +1,47 @@
-import fs from 'fs';
 import test from 'ava';
-import frame from '../lib/frame';
+import fs from 'fs-promise';
+
+import frame from '../src/frame';
 
 const DEFAULT_IMAGE = '';
 const DEFAULT_TS = new Date();
 
-function loadImage(imagePath) {
-	return new Promise((resolve, reject) => {
-		fs.readFile(imagePath, (err, res) => {
-			if (err) {
-				return reject(err);
-			}
-			resolve(res);
-		});
-	});
-}
-
 test('getTimeStamp returns the right timestamps', t => {
-	const f = frame(DEFAULT_IMAGE, DEFAULT_TS);
+	const f = frame.create(DEFAULT_IMAGE, DEFAULT_TS);
 	t.same(DEFAULT_TS, f.getTimeStamp());
 });
 
 test('getHistogram get the right histogram for black pixel', t => {
-	return loadImage('./assets/Solid_black.png')
-		.then(image => frame(image, DEFAULT_TS).getHistogram())
+	return fs.readFile('./assets/Solid_black.png')
+		.then(image => frame.create(image, DEFAULT_TS).getHistogram())
 		.then(res => {
 			for (var i = 0; i < 3; i++) {
-				t.true(res[i][0] > 0, 'First entry should have high value');
+				t.true(res[i][0] > 0, 'Lowest pixel doesn\'t match with black');
 			}
 		});
 });
 
 test('getHistogram should not takes in account white pixels', t => {
-	return loadImage('./assets/grayscale.png')
-		.then(image => frame(image, DEFAULT_TS).getHistogram())
+	return fs.readFile('./assets/grayscale.png')
+		.then(image => frame.create(image, DEFAULT_TS).getHistogram())
 		.then(res => {
 			for (var i = 0; i < 3; i++) {
-				t.true(res[i][255] === 0, 'White colors should no be present');
+				t.true(res[i][255] === 0, 'Highest pixel is not white');
 			}
 		});
 });
 
 test('frames can set and retrieve progress', t => {
 	const PROGRESS = 43;
-	const f = frame(DEFAULT_IMAGE, DEFAULT_TS);
+	const f = frame.create(DEFAULT_IMAGE, DEFAULT_TS);
 
 	f.setProgress(PROGRESS);
 	t.same(PROGRESS, f.getProgress());
+});
+
+test('extract frames from timeline should returns an array of frames', t => {
+	return frame.extractFramesFromTimeline('./assets/nyt.json')
+		.then(frames => {
+			t.ok(Array.isArray(frames), 'Frames is not an array');
+		});
 });

@@ -1,10 +1,6 @@
 'use strict';
 
-const fs = require('fs');
 const Promise = require('bluebird');
-const DevtoolsTimelineModel = require('devtools-timeline-model');
-
-const frame = require('./frame');
 
 function calculateFrameProgress(current, initial, target) {
 	const props = {
@@ -31,7 +27,13 @@ function calculateFrameProgress(current, initial, target) {
 			}
 		}
 
-		return Math.floor(match / total * 100);
+		let progress;
+		if (match === 0 && total === 0) {	// All images are the same
+			progress = 100;
+		} else {													// When images differs
+			progress = Math.floor(match / total * 100);
+		}
+		return progress;
 	});
 }
 
@@ -39,14 +41,13 @@ function calculateVisualProgress(frames) {
 	const initial = frames[0];
 	const target = frames[frames.length - 1];
 
-	return Promise.map(frames, f => calculateFrameProgress(f, initial, target))
-		.map(function (progress, index) {
-			frames[index].setProgress(progress);
-			return frames;
-		});
+	return Promise
+		.map(frames, f => calculateFrameProgress(f, initial, target))
+		.each((progress, index) => frames[index].setProgress(progress))
+		.then(() => frames);
 }
 
-function getSpeedIndex(frames) {
+function calculateSpeedIndex(frames) {
 	let speedIndex = 0;
 	let lastTs = frames[0].getTimeStamp();
 	let lastProgress = frames[0].getProgress();
@@ -61,24 +62,7 @@ function getSpeedIndex(frames) {
 	return speedIndex;
 }
 
-function extractFramesFromTimeline(timelinePath) {
-	const trace = fs.readFileSync(timelinePath, 'utf-8');
-
-	const model = new DevtoolsTimelineModel(trace);
-	const rawFrames = model.filmStripModel().frames();
-
-	return Promise.map(rawFrames, f => f.imageDataPromise())
-		.map(function (img, index) {
-			const imgBuff = new Buffer(img, 'base64');
-			return frame(imgBuff, rawFrames[index].timestamp);
-		});
-}
-
-module.exports = function (timelinePath) {
-	return extractFramesFromTimeline(timelinePath)
-		.then(calculateVisualProgress)
-		.then(function (res) {
-			const frames = res;
-			console.log(frames, getSpeedIndex(res));
-		});
+module.exports = {
+	calculateVisualProgress,
+	calculateSpeedIndex
 };
