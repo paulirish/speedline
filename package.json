@@ -1,5 +1,5 @@
 {
-  "name": "speed-index",
+  "name": "speed-line",
   "version": "0.0.0",
   "description": "Extract speed index from chrome dev tool timeline",
   "license": "MIT",
@@ -19,13 +19,16 @@
     "prepublish": "npm run build"
   },
   "files": [
-    "index.js",
+    "lib",
     "cli.js"
   ],
   "keywords": [
-    "cli-app",
-    "cli",
-    ""
+    "chrome",
+    "devtool",
+    "timeline",
+    "speed",
+    "index",
+    "performance"
   ],
   "dependencies": {
     "bluebird": "^3.3.4",
