@@ -63,16 +63,15 @@ function frame(image, ts) {
 
 	return {
 		getHistogram: function () {
-			return new Promise(function (resolve, reject) {
+			return Promise.try(function () {
 				if (_histogram) {
-					return resolve(_histogram);
+					return _histogram;
 				}
 
-				conertPNGToHistogram(image).then(function (histogram) {
+				return conertPNGToHistogram(image).then(function (histogram) {
 					_histogram = histogram;
-					return resolve(_histogram);
-				})
-				.catch(reject);
+					return _histogram;
+				});
 			});
 		},
 
