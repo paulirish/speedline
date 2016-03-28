@@ -1,7 +1,7 @@
 {
   "name": "speed-index",
   "version": "0.0.0",
-  "description": "My astonishing module",
+  "description": "Extract speed index from chrome dev tool timeline",
   "license": "MIT",
   "repository": "pmdartus/speed-index",
   "author": {

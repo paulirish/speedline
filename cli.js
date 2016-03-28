@@ -17,6 +17,8 @@ var cli = meow([
 	'  ponies & rainbows'
 ]);
 
+console.log(cli);
+
 speedIndex()
 	.then(console.log)
 	.then(console.error);
