@@ -45,4 +45,3 @@ var filePath = path.resolve(process.cwd(), cli.input[0]);
 
 speedIndex(filePath)
 	.then(displayResults);
-	// .catch(handleError);

@@ -52,6 +52,10 @@ function extractFramesFromTimeline(timelinePath) {
 	const model = new DevtoolsTimelineModel(trace);
 	const rawFrames = model.filmStripModel().frames();
 
+	const timelineModel = model.timelineModel();
+	const start = timelineModel.minimumRecordTime();
+	const end = timelineModel.maximumRecordTime();
+
 	return Promise.map(rawFrames, f => f.imageDataPromise())
 		.map(function (img, index) {
 			const imgBuff = new Buffer(img, 'base64');
@@ -66,6 +70,12 @@ function extractFramesFromTimeline(timelinePath) {
 					return resolve(f);
 				});
 			});
+		})
+		.then(function (frames) {
+			const firstFrame = frame(frames[0].getImage(), start);
+			const lastFrame = frame(frames[frames.length - 1].getImage(), end);
+
+			return [firstFrame, ...frames, lastFrame];
 		});
 }
 
@@ -93,6 +103,10 @@ function frame(image, ts) {
 
 		setProgress: function (progress) {
 			_progress = progress;
+		},
+
+		getImage: function () {
+			return image;
 		},
 
 		getProgress: function () {
