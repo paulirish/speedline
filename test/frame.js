@@ -1,9 +1,8 @@
 import test from 'ava';
-import fs from 'fs-promise';
 
 import frame from '../lib/frame';
 
-const DEFAULT_IMAGE = '';
+const DEFAULT_IMAGE = './assets/Solid_black.png';
 const DEFAULT_TS = new Date().getTime();
 
 test('getTimeStamp returns the right timestamps', t => {
@@ -12,8 +11,7 @@ test('getTimeStamp returns the right timestamps', t => {
 });
 
 test('getHistogram get the right histogram for black pixel', t => {
-	return fs.readFile('./assets/Solid_black.png')
-		.then(image => frame.create(image, DEFAULT_TS).getHistogram())
+	return frame.create('./assets/Solid_black.png', DEFAULT_TS).getHistogram()
 		.then(res => {
 			for (var i = 0; i < 3; i++) {
 				t.true(res[i][0] > 0, 'Lowest pixel doesn\'t match with black');
@@ -22,8 +20,7 @@ test('getHistogram get the right histogram for black pixel', t => {
 });
 
 test('getHistogram should not takes in account white pixels', t => {
-	return fs.readFile('./assets/grayscale.png')
-		.then(image => frame.create(image, DEFAULT_TS).getHistogram())
+	return frame.create('./assets/grayscale.png', DEFAULT_TS).getHistogram()
 		.then(res => {
 			for (var i = 0; i < 3; i++) {
 				t.true(res[i][255] === 0, 'Highest pixel is not white');
@@ -39,7 +36,7 @@ test('frames can set and retrieve progress', t => {
 	t.same(PROGRESS, f.getProgress());
 });
 
-test.skip('extract frames from timeline should returns an array of frames', t => {
+test('extract frames from timeline should returns an array of frames', t => {
 	return frame.extractFramesFromTimeline('./assets/nyt.json')
 		.then(frames => {
 			t.ok(Array.isArray(frames), 'Frames is not an array');

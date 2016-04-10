@@ -1,5 +1,4 @@
 import test from 'ava';
-import fs from 'fs-promise';
 import Promise from 'bluebird';
 
 import frame from '../lib/frame';
@@ -8,8 +7,7 @@ import speedIndex from '../lib/speed-index';
 function calculateVisualProgressFromImages(images = [], delay = 1000) {
 	const baseTs = new Date().getTime();
 
-	return Promise.map(images, imgPath => fs.readFile(imgPath))
-		.map((img, i) => frame.create(img, baseTs + i * delay))
+	return Promise.map(images, (imgPath, i) => frame.create(imgPath, baseTs + i * delay))
 		.tap(speedIndex.calculateVisualProgress);
 }
 

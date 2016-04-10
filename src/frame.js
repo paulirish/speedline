@@ -1,11 +1,14 @@
 'use strict';
 
-const fs = require('fs');
-const Promise = require('bluebird');
-const tempWrite = require('temp-write');
-const gm = require('gm').subClass({imageMagick: true});
-const getPixels = Promise.promisify(require('get-pixels'));
-const DevtoolsTimelineModel = require('devtools-timeline-model');
+import fs from 'fs';
+import gmBase from 'gm';
+import Promise from 'bluebird';
+import tempWrite from 'temp-write';
+import getPixelsCb from 'get-pixels';
+import DevtoolsTimelineModel from 'devtools-timeline-model';
+
+const gm = gmBase.subClass({imageMagick: true});
+const getPixels = Promise.promisify(getPixelsCb);
 
 function convertPixelsToHistogram(img) {
 	const createHistogramArray = function () {

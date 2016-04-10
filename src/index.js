@@ -1,7 +1,7 @@
 'use strict';
 
-const frame = require('./frame');
-const speedIndex = require('./speed-index');
+import frame from './frame';
+import speedIndex from './speed-index';
 
 function calculateValues(frames) {
 	const startTs = frames[0].getTimeStamp();

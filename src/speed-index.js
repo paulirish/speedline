@@ -1,6 +1,6 @@
 'use strict';
 
-const Promise = require('bluebird');
+import Promise from 'bluebird';
 
 function calculateFrameProgress(current, initial, target) {
 	const props = {
