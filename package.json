@@ -11,7 +11,7 @@
   },
   "bin": "cli.js",
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=5.0"
   },
   "scripts": {
     "build": "babel -d lib/ src/",
