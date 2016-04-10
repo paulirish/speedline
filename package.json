@@ -34,8 +34,10 @@
     "bluebird": "^3.3.4",
     "devtools-timeline-model": "^1.0.16",
     "get-pixels": "^3.3.0",
+    "gm": "^1.22.0",
     "loud-rejection": "^1.3.0",
-    "meow": "^3.7.0"
+    "meow": "^3.7.0",
+    "temp-write": "^2.1.0"
   },
   "devDependencies": {
     "ava": "^0.12.0",

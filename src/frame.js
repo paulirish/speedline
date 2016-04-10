@@ -2,6 +2,8 @@
 
 const fs = require('fs');
 const Promise = require('bluebird');
+const tempWrite = require('temp-write');
+const gm = require('gm').subClass({imageMagick: true});
 const getPixels = Promise.promisify(require('get-pixels'));
 const DevtoolsTimelineModel = require('devtools-timeline-model');
 
@@ -40,7 +42,7 @@ function convertPixelsToHistogram(img) {
 }
 
 function conertPNGToHistogram(buf) {
-	return getPixels(buf, 'image/png')
+	return getPixels(buf)
     .then(convertPixelsToHistogram);
 }
 
@@ -53,7 +55,17 @@ function extractFramesFromTimeline(timelinePath) {
 	return Promise.map(rawFrames, f => f.imageDataPromise())
 		.map(function (img, index) {
 			const imgBuff = new Buffer(img, 'base64');
-			return frame(imgBuff, rawFrames[index].timestamp);
+			const imgPath = tempWrite.sync(imgBuff, 'frame.jpg');
+
+			return new Promise((resolve, reject) => {
+				gm(imgBuff).write(imgPath, function (err) {
+					if (err) {
+						return reject(err);
+					}
+					const f = frame(imgPath, rawFrames[index].timestamp);
+					return resolve(f);
+				});
+			});
 		});
 }
 
