@@ -1,12 +1,12 @@
 {
-  "name": "speed-line",
+  "name": "speedline",
   "version": "0.0.1",
-  "description": "Extract speed index from chrome dev tool timeline",
+  "description": "Get the speed index from chrome dev tool timeline files",
   "license": "MIT",
-  "repository": "pmdartus/speed-index",
+  "repository": "pmdartus/speedline",
   "author": {
     "name": "Pierre-Marie Dartus",
-    "email": "p.dartus@salesforce.com",
+    "email": "dartus.pierremarie@gmail.com",
     "url": "github.com/pmdartus"
   },
   "bin": "cli.js",

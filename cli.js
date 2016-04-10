@@ -54,13 +54,13 @@ loudRejection();
 
 var cli = meow([
 	'Usage',
-	'  $ speed-index <timeline>',
+	'  $ speedline <timeline>',
 	'',
 	'Options',
 	'  -p, --pretty  Pretty print the output',
 	'',
 	'Examples',
-	'  $ speed-index ./timeline.json'
+	'  $ speedline ./timeline.json'
 ]);
 
 if (cli.input.length !== 1) {
