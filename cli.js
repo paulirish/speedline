@@ -43,7 +43,7 @@ function displayPretty(res) {
 function handleError(err) {
 	console.error(err.message);
 	console.log(Object.keys(err));
-	if (err.satck) {
+	if (err.stack) {
 		console.log(err.stack);
 	}
 
