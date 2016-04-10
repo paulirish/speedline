@@ -31,6 +31,7 @@
     "performance"
   ],
   "dependencies": {
+    "babar": "0.0.3",
     "bluebird": "^3.3.4",
     "chalk": "^1.1.3",
     "devtools-timeline-model": "^1.0.16",
