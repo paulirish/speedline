@@ -11,42 +11,37 @@ function calculateVisualProgressFromImages(images = [], delay = 1000) {
 		.tap(speedIndex.calculateVisualProgress);
 }
 
-test('visual progress should be 100 if there is a single frame only', t => {
-	return calculateVisualProgressFromImages([
-		'./assets/grayscale.png'
-	]).then(frames => {
-		t.same(frames[0].getProgress(), 100);
-	});
+test('visual progress should be 100 if there is a single frame only', async t => {
+	const frames = await calculateVisualProgressFromImages(['./assets/grayscale.png']);
+	t.is(frames[0].getProgress(), 100);
 });
 
-test('visual progress should be 100 if there is not change', t => {
-	return calculateVisualProgressFromImages([
+test('visual progress should be 100 if there is not change', async t => {
+	const frames = await calculateVisualProgressFromImages([
 		'./assets/grayscale.png',
 		'./assets/grayscale.png'
-	]).then(frames => {
-		for (var i = 0; i < frames.length; i++) {
-			t.same(frames[i].getProgress(), 100);
-		}
-	});
+	]);
+
+	for (const frame of frames) {
+		t.is(frame.getProgress(), 100);
+	}
 });
 
-test('visual progress should have 0 and 100 for different images', t => {
-	return calculateVisualProgressFromImages([
+test('visual progress should have 0 and 100 for different images', async t => {
+	const frames = await calculateVisualProgressFromImages([
 		'./assets/Solid_black.png',
 		'./assets/grayscale.png'
-	]).then(frames => {
-		t.same(frames[0].getProgress(), 0);
-		t.same(frames[1].getProgress(), 100);
-	});
+	]);
+
+	t.is(frames[0].getProgress(), 0);
+	t.is(frames[1].getProgress(), 100);
 });
 
-test('speed index calculate teh right value', t => {
-	return calculateVisualProgressFromImages([
+test('speed index calculate teh right value', async t => {
+	const res = await calculateVisualProgressFromImages([
 		'./assets/Solid_black.png',
 		'./assets/grayscale.png'
-	])
-		.then(speedIndex.calculateSpeedIndex)
-		.then(speedIndex => {
-			t.same(speedIndex, 1000);
-		});
+	]).then(speedIndex.calculateSpeedIndex);
+
+	t.is(res, 1000);
 });
