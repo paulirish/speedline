@@ -7,7 +7,7 @@ The [Navigation Timing API](https://developer.mozilla.org/en-US/docs/Web/API/Nav
 The [Speed Index](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/metrics/speed-index), introduced by [WebpageTest.org](http://www.webpagetest.org/), aims to solve this issue. It measures how fast the page content is visually displayed.
 
 ## Install
-Before using `speedline`, please install [ImageMagick](http://www.imagemagick.org/script/index.php) and ensure that your version of node is greater than 4.0.
+Before using `speedline`, please install [ImageMagick](http://www.imagemagick.org/script/index.php) and ensure that your version of node is greater than `5.0`.
 
 ```bash
 $ npm install -g speedline
