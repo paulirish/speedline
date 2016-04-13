@@ -1,4 +1,4 @@
-# speedline [![Build Status](https://travis-ci.org/pmdartus/speed-index.svg?branch=master)](https://travis-ci.org/pmdartus/speed-index)
+# speedline [![Build Status](https://travis-ci.org/pmdartus/speedline.svg?branch=master)](https://travis-ci.org/pmdartus/speedline)
 
 ![speedline screenshot](/screenshot.png?raw=true)
 
