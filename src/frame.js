@@ -1,13 +1,10 @@
 'use strict';
 
 import fs from 'fs';
-import gmBase from 'gm';
 import Promise from 'bluebird';
-import tempWrite from 'temp-write';
 import getPixelsCb from 'get-pixels';
 import DevtoolsTimelineModel from 'devtools-timeline-model';
 
-const gm = gmBase.subClass({imageMagick: true});
 const getPixels = Promise.promisify(getPixelsCb);
 
 function convertPixelsToHistogram(img) {
@@ -44,8 +41,8 @@ function convertPixelsToHistogram(img) {
 	return histograms;
 }
 
-function conertPNGToHistogram(buf) {
-	return getPixels(buf)
+function conertPNGToHistogram(imgBuff) {
+	return getPixels(imgBuff, 'image/jpg')
     .then(convertPixelsToHistogram);
 }
 
@@ -62,17 +59,7 @@ function extractFramesFromTimeline(timelinePath) {
 	return Promise.map(rawFrames, f => f.imageDataPromise())
 		.map(function (img, index) {
 			const imgBuff = new Buffer(img, 'base64');
-			const imgPath = tempWrite.sync(imgBuff, 'frame.jpg');
-
-			return new Promise((resolve, reject) => {
-				gm(imgBuff).write(imgPath, function (err) {
-					if (err) {
-						return reject(err);
-					}
-					const f = frame(imgPath, rawFrames[index].timestamp);
-					return resolve(f);
-				});
-			});
+			return frame(imgBuff, rawFrames[index].timestamp);
 		})
 		.then(function (frames) {
 			const firstFrame = frame(frames[0].getImage(), start);
@@ -82,7 +69,7 @@ function extractFramesFromTimeline(timelinePath) {
 		});
 }
 
-function frame(image, ts) {
+function frame(imgBuff, ts) {
 	let _histogram = null;
 	let _progress = null;
 
@@ -93,7 +80,7 @@ function frame(image, ts) {
 					return _histogram;
 				}
 
-				return conertPNGToHistogram(image).then(function (histogram) {
+				return conertPNGToHistogram(imgBuff).then(function (histogram) {
 					_histogram = histogram;
 					return _histogram;
 				});
@@ -109,7 +96,7 @@ function frame(image, ts) {
 		},
 
 		getImage: function () {
-			return image;
+			return imgBuff;
 		},
 
 		getProgress: function () {
