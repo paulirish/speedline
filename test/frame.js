@@ -1,5 +1,5 @@
-import test from 'ava';
 import fs from 'fs';
+import test from 'ava';
 import frame from '../lib/frame';
 
 const DEFAULT_IMAGE = fs.readFileSync('./assets/Solid_black.jpg');
