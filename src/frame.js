@@ -41,7 +41,7 @@ function convertPixelsToHistogram(img) {
 	return histograms;
 }
 
-function conertPNGToHistogram(imgBuff) {
+function convertJPGToHistogram(imgBuff) {
 	return getPixels(imgBuff, 'image/jpg')
     .then(convertPixelsToHistogram);
 }
@@ -70,7 +70,6 @@ function extractFramesFromTimeline(timelinePath) {
 }
 
 function frame(imgBuff, ts) {
-	console.log('sup', imgBuff, ts);
 	let _histogram = null;
 	let _progress = null;
 
@@ -81,7 +80,7 @@ function frame(imgBuff, ts) {
 					return _histogram;
 				}
 
-				return conertPNGToHistogram(imgBuff).then(function (histogram) {
+				return convertJPGToHistogram(imgBuff).then(function (histogram) {
 					_histogram = histogram;
 					return _histogram;
 				});
