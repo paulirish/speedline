@@ -70,6 +70,7 @@ function extractFramesFromTimeline(timelinePath) {
 }
 
 function frame(imgBuff, ts) {
+	console.log('sup', imgBuff, ts);
 	let _histogram = null;
 	let _progress = null;
 

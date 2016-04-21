@@ -1,8 +1,8 @@
 import test from 'ava';
-
+import fs from 'fs';
 import frame from '../lib/frame';
 
-const DEFAULT_IMAGE = './assets/Solid_black.png';
+const DEFAULT_IMAGE = fs.readFileSync('./assets/Solid_black.png');
 const DEFAULT_TS = new Date().getTime();
 
 test('getTimeStamp returns the right timestamps', t => {
@@ -11,7 +11,7 @@ test('getTimeStamp returns the right timestamps', t => {
 });
 
 test('getHistogram get the right histogram for black pixel', async t => {
-	const res = await frame.create('./assets/Solid_black.png', DEFAULT_TS).getHistogram();
+	const res = await frame.create(DEFAULT_IMAGE, DEFAULT_TS).getHistogram();
 
 	for (const x of res) {
 		t.true(x[0] > 0, 'Lowest pixel doesn\'t match with black');
@@ -19,7 +19,8 @@ test('getHistogram get the right histogram for black pixel', async t => {
 });
 
 test('getHistogram should not takes in account white pixels', async t => {
-	const res = await frame.create('./assets/grayscale.png', DEFAULT_TS).getHistogram();
+	const imgBuff = fs.readFileSync('./assets/grayscale.png');
+	const res = await frame.create(imgBuff, DEFAULT_TS).getHistogram();
 
 	for (const x of res) {
 		t.true(x[255] === 0, 'Highest pixel is not white');
