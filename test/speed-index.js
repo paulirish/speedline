@@ -1,16 +1,17 @@
 import fs from 'fs';
 import test from 'ava';
-import Promise from 'bluebird';
+
 import frame from '../lib/frame';
 import speedIndex from '../lib/speed-index';
 
 function calculateVisualProgressFromImages(images = [], delay = 1000) {
 	const baseTs = new Date().getTime();
 
-	return Promise.map(images, (imgPath, i) => {
+	return Promise.all(images.map((imgPath, i) => {
 		const imgBuff = fs.readFileSync(imgPath);
 		return frame.create(imgBuff, baseTs + i * delay);
-	}).tap(speedIndex.calculateVisualProgress);
+	}))
+	.then(ret => speedIndex.calculateVisualProgress(ret).then(() => ret));
 }
 
 test('visual progress should be 100 if there is a single frame only', async t => {

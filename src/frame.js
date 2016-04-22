@@ -1,11 +1,19 @@
 'use strict';
 
 import fs from 'fs';
-import Promise from 'bluebird';
 import getPixelsCb from 'get-pixels';
 import DevtoolsTimelineModel from 'devtools-timeline-model';
 
-const getPixels = Promise.promisify(getPixelsCb);
+const getPixels = (buff, type) => {
+	return new Promise((resolve, reject) => {
+		getPixelsCb(buff, type, (err, v) => {
+			if (err) {
+				return reject(err);
+			}
+			resolve(v);
+		});
+	});
+};
 
 function convertPixelsToHistogram(img) {
 	const createHistogramArray = function () {
@@ -30,7 +38,7 @@ function convertPixelsToHistogram(img) {
 			for (let j = 0; j < height; j++) {
 				const pixelValue = img.get(i, j, channel);
 
-        // Erase pixels considered as white
+				// Erase pixels considered as white
 				if (img.get(i, j, 0) < 249 && img.get(i, j, 1) < 249 && img.get(i, j, 2) < 249) {
 					histograms[channel][pixelValue]++;
 				}
@@ -43,7 +51,7 @@ function convertPixelsToHistogram(img) {
 
 function convertJPGToHistogram(imgBuff) {
 	return getPixels(imgBuff, 'image/jpg')
-    .then(convertPixelsToHistogram);
+		.then(convertPixelsToHistogram);
 }
 
 function extractFramesFromTimeline(timelinePath) {
@@ -56,17 +64,18 @@ function extractFramesFromTimeline(timelinePath) {
 	const start = timelineModel.minimumRecordTime();
 	const end = timelineModel.maximumRecordTime();
 
-	return Promise.map(rawFrames, f => f.imageDataPromise())
-		.map(function (img, index) {
+	return Promise.all(rawFrames.map(f => f.imageDataPromise())).then(ret => {
+		return Promise.all(ret.map(function (img, index) {
 			const imgBuff = new Buffer(img, 'base64');
 			return frame(imgBuff, rawFrames[index].timestamp);
-		})
+		}))
 		.then(function (frames) {
 			const firstFrame = frame(frames[0].getImage(), start);
 			const lastFrame = frame(frames[frames.length - 1].getImage(), end);
 
 			return [firstFrame, ...frames, lastFrame];
 		});
+	});
 }
 
 function frame(imgBuff, ts) {
@@ -75,7 +84,7 @@ function frame(imgBuff, ts) {
 
 	return {
 		getHistogram: function () {
-			return Promise.try(function () {
+			return Promise.resolve().then(() => {
 				if (_histogram) {
 					return _histogram;
 				}
