@@ -1,7 +1,5 @@
 'use strict';
 
-import Promise from 'bluebird';
-
 function calculateFrameProgress(current, initial, target) {
 	const props = {
 		current: current.getHistogram(),
@@ -9,15 +7,15 @@ function calculateFrameProgress(current, initial, target) {
 		target: target.getHistogram()
 	};
 
-	return Promise.props(props).then(function (results) {
+	return Promise.all([props.current, props.initial, props.target]).then((results) => {
 		let total = 0;
 		let match = 0;
 
 		for (let channel = 0; channel < 3; channel++) {
 			for (let pixelVal = 0; pixelVal < 256; pixelVal++) {
-				const currentCount = results.current[channel][pixelVal];
-				const initialCount = results.initial[channel][pixelVal];
-				const targetCount = results.target[channel][pixelVal];
+				const currentCount = results[0][channel][pixelVal];
+				const initialCount = results[1][channel][pixelVal];
+				const targetCount = results[2][channel][pixelVal];
 
 				const currentDiff = Math.abs(currentCount - initialCount);
 				const targetDiff = Math.abs(targetCount - initialCount);
@@ -41,9 +39,8 @@ function calculateVisualProgress(frames) {
 	const initial = frames[0];
 	const target = frames[frames.length - 1];
 
-	return Promise
-		.map(frames, f => calculateFrameProgress(f, initial, target))
-		.each((progress, index) => frames[index].setProgress(progress))
+	return Promise.all(frames.map(f => calculateFrameProgress(f, initial, target)))
+		.then(v => v.forEach((progress, index) => frames[index].setProgress(progress)))
 		.then(() => frames);
 }
 
