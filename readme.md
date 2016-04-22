@@ -9,7 +9,6 @@ The [Navigation Timing API](https://developer.mozilla.org/en-US/docs/Web/API/Nav
 The [Speed Index](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/metrics/speed-index), introduced by [WebpageTest.org](http://www.webpagetest.org/), aims to solve this issue. It measures **how fast the page content is visually displayed**. The current implementation is based on the **Visual Progress from Video Capture** calculation method described on the [Speed Index](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/metrics/speed-index) page. The visual progress is calculated by comparing the distance between the histogram of the current frame and the final frame.
 
 ## Install
-Before using `speedline`, please install [ImageMagick](http://www.imagemagick.org/script/index.php) and ensure that your version of node is greater than `5.0`.
 
 ```bash
 $ npm install -g speedline
