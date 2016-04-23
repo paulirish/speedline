@@ -39,3 +39,9 @@ test('extract frames from timeline should returns an array of frames', async t =
 	const frames = await frame.extractFramesFromTimeline('./assets/nyt.json');
 	t.true(Array.isArray(frames), 'Frames is not an array');
 });
+
+test('extract frames should support json', async t => {
+	const trace = JSON.parse(fs.readFileSync('./assets/progressive-app.json', 'utf-8'));
+	const frames = await frame.extractFramesFromTimeline(trace);
+	t.true(Array.isArray(frames), 'Frames is not an array');
+});
