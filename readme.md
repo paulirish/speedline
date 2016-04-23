@@ -58,7 +58,7 @@ speedline('./timeline').then(results => {
 #### `speedline(timelinePath)`
 
 * (string) `timelinePath`
-* (Promise) resolving with an object containing:
+* returns (Promise) resolving with an object containing:
   * `speedIndex` (number) - speed index value.
   * `first` (number) - duration before the first visual change in ms.
   * `complete` (number) - duration before the last visual change in ms.
