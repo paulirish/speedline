@@ -1,6 +1,6 @@
 {
   "name": "speedline",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "Get the speed index from chrome dev tool timeline files",
   "license": "MIT",
   "repository": "pmdartus/speedline",
