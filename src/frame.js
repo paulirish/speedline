@@ -1,19 +1,16 @@
 'use strict';
 
 import fs from 'fs';
-import getPixelsCb from 'get-pixels';
+import jpeg from 'jpeg-js';
 import DevtoolsTimelineModel from 'devtools-timeline-model';
 
-const getPixels = (buff, type) => {
-	return new Promise((resolve, reject) => {
-		getPixelsCb(buff, type, (err, v) => {
-			if (err) {
-				return reject(err);
-			}
-			resolve(v);
-		});
-	});
+const getPixels = (buff) => {
+	return Promise.resolve(jpeg.decode(buff));
 };
+
+function getPixel(x, y, channel, width, buff) {
+	return buff[(x + y * width) * 4 + channel];
+}
 
 function convertPixelsToHistogram(img) {
 	const createHistogramArray = function () {
@@ -24,8 +21,8 @@ function convertPixelsToHistogram(img) {
 		return ret;
 	};
 
-	const width = img.shape[0];
-	const height = img.shape[1];
+	const width = img.width;
+	const height = img.height;
 
 	const histograms = [
 		createHistogramArray(),
@@ -36,10 +33,12 @@ function convertPixelsToHistogram(img) {
 	for (let channel = 0; channel < histograms.length; channel++) {
 		for (let i = 0; i < width; i++) {
 			for (let j = 0; j < height; j++) {
-				const pixelValue = img.get(i, j, channel);
+				const pixelValue = getPixel(i, j, channel, width, img.data);
 
 				// Erase pixels considered as white
-				if (img.get(i, j, 0) < 249 && img.get(i, j, 1) < 249 && img.get(i, j, 2) < 249) {
+				if (getPixel(i, j, 0, width, img.data) < 249 &&
+						getPixel(i, j, 1, width, img.data) < 249 &&
+						getPixel(i, j, 2, width, img.data) < 249) {
 					histograms[channel][pixelValue]++;
 				}
 			}
@@ -50,8 +49,7 @@ function convertPixelsToHistogram(img) {
 }
 
 function convertJPGToHistogram(imgBuff) {
-	return getPixels(imgBuff, 'image/jpg')
-		.then(convertPixelsToHistogram);
+	return getPixels(imgBuff).then(convertPixelsToHistogram);
 }
 
 function extractFramesFromTimeline(timelinePath) {
