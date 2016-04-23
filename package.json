@@ -10,6 +10,7 @@
     "url": "github.com/pmdartus"
   },
   "bin": "cli.js",
+  "main": "src",
   "engines": {
     "node": ">=5.0"
   },
