@@ -63,7 +63,7 @@ speedline('./timeline').then(results => {
   * `first` (number) - duration before the first visual change in ms.
   * `complete` (number) - duration before the last visual change in ms.
   * `duration` (number) - timeline recording duration in ms.
-  * `frames` ([Frame](#Frame)[]) - array of all the frames extracted from the timeline.
+  * `frames` ([Frame](#frame)[]) - array of all the frames extracted from the timeline.
 
 #### `Frame`
 
