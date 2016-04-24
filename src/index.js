@@ -39,14 +39,9 @@ function calculateValues(frames) {
  * @param  {string|Array} timeline path to the timeline to process, or the frames JSON
  * @return {Promise} resoving with an object containing the speed index informations
  */
-
 module.exports = function (timeline) {
-	console.time('extract');
 	return frame.extractFramesFromTimeline(timeline).then(function (frames) {
-		console.timeEnd('extract');
-		console.time('progress');
 		calculateVisualProgress(frames);
-		console.timeEnd('progress');
 		return calculateValues(frames);
 	});
 };
