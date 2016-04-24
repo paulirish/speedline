@@ -1,7 +1,10 @@
 'use strict';
 
 import frame from './frame';
-import speedIndex from './speed-index';
+import {
+	calculateVisualProgress,
+	calculateSpeedIndex
+} from './speed-index';
 
 function calculateValues(frames) {
 	const startTs = frames[0].getTimeStamp();
@@ -27,7 +30,7 @@ function calculateValues(frames) {
 		first,
 		complete,
 		duration,
-		speedIndex: Math.floor(speedIndex.calculateSpeedIndex(frames))
+		speedIndex: Math.floor(calculateSpeedIndex(frames))
 	};
 }
 
@@ -37,7 +40,12 @@ function calculateValues(frames) {
  * @return {Promise} resoving with an object containing the speed index informations
  */
 module.exports = function (timelinePath) {
-	return frame.extractFramesFromTimeline(timelinePath)
-		.then(speedIndex.calculateVisualProgress)
-		.then(calculateValues);
+	console.time('extract');
+	return frame.extractFramesFromTimeline(timelinePath).then(function (frames) {
+		console.timeEnd('extract');
+		console.time('progress');
+		calculateVisualProgress(frames);
+		console.timeEnd('progress');
+		return calculateValues(frames);
+	});
 };
