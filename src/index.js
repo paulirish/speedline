@@ -40,12 +40,8 @@ function calculateValues(frames) {
  * @return {Promise} resoving with an object containing the speed index informations
  */
 module.exports = function (timelinePath) {
-	console.time('extract');
 	return frame.extractFramesFromTimeline(timelinePath).then(function (frames) {
-		console.timeEnd('extract');
-		console.time('progress');
 		calculateVisualProgress(frames);
-		console.timeEnd('progress');
 		return calculateValues(frames);
 	});
 };
