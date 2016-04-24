@@ -31,6 +31,11 @@ function calculateValues(frames) {
 	};
 }
 
+/**
+ * Retrieve speed index informations
+ * @param  {string} timelinePath - path of the timeline to process
+ * @return {Promise} resoving with an object containing the speed index informations
+ */
 module.exports = function (timelinePath) {
 	return frame.extractFramesFromTimeline(timelinePath)
 		.then(speedIndex.calculateVisualProgress)
