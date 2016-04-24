@@ -3,11 +3,14 @@
 
 var path = require('path');
 var meow = require('meow');
-var chalk = require('chalk');
 var babar = require('babar');
 var loudRejection = require('loud-rejection');
 
 var speedIndex = require('./lib');
+
+const OUTPUT_GREEN = '\x1b[32m';
+const OUTPUT_BOLD = '\x1b[1m';
+const OUTPUT_RESET = '\x1b[22m\x1b[39m';
 
 function display(res) {
 	const startTs = res.frames[0].getTimeStamp();
@@ -26,14 +29,17 @@ function display(res) {
 }
 
 function displayPretty(res) {
-	console.log(`${chalk.bold('Recording duration')}: ${chalk.green(res.duration + ' ms')}`);
-	console.log(`${chalk.bold('First visual change')}: ${chalk.green(res.first + ' ms')}`);
-	console.log(`${chalk.bold('Last visual change')}: ${chalk.green(res.complete + ' ms')}`);
-	console.log(`${chalk.bold('Speed Index')}: ${chalk.green(res.speedIndex)}`);
+	const green = (content) => OUTPUT_GREEN + content + OUTPUT_RESET;
+	const bold = (content) => OUTPUT_BOLD + content + OUTPUT_RESET;
 
-	console.log();
-
-	console.log(chalk.bold('Histogram:'));
+	console.log([
+		`${bold('Recording duration')}: ${green(res.duration + ' ms')}`,
+		`${bold('First visual change')}: ${green(res.first + ' ms')}`,
+		`${bold('Last visual change')}: ${green(res.complete + ' ms')}`,
+		`${bold('Speed Index')}: ${green(res.speedIndex)}`,
+		'',
+		`${bold('Histogram:')}`
+	].join('\n'));
 
 	var baseTs = res.frames[0].getTimeStamp();
 	var progress = res.frames.map(frame => [frame.getTimeStamp() - baseTs, frame.getProgress()]);
