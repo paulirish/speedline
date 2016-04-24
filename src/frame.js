@@ -4,10 +4,6 @@ import fs from 'fs';
 import jpeg from 'jpeg-js';
 import DevtoolsTimelineModel from 'devtools-timeline-model';
 
-const getPixels = (buff) => {
-	return Promise.resolve(jpeg.decode(buff));
-};
-
 function getPixel(x, y, channel, width, buff) {
 	return buff[(x + y * width) * 4 + channel];
 }
@@ -48,10 +44,6 @@ function convertPixelsToHistogram(img) {
 	return histograms;
 }
 
-function convertJPGToHistogram(imgBuff) {
-	return getPixels(imgBuff).then(convertPixelsToHistogram);
-}
-
 function extractFramesFromTimeline(timelinePath) {
 	const trace = fs.readFileSync(timelinePath, 'utf-8');
 
@@ -82,16 +74,13 @@ function frame(imgBuff, ts) {
 
 	return {
 		getHistogram: function () {
-			return Promise.resolve().then(() => {
-				if (_histogram) {
-					return _histogram;
-				}
+			if (_histogram) {
+				return _histogram;
+			}
 
-				return convertJPGToHistogram(imgBuff).then(function (histogram) {
-					_histogram = histogram;
-					return _histogram;
-				});
-			});
+			const pixels = jpeg.decode(imgBuff);
+			_histogram = convertPixelsToHistogram(pixels);
+			return _histogram;
 		},
 
 		getTimeStamp: function () {

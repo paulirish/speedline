@@ -1,47 +1,46 @@
 'use strict';
 
 function calculateFrameProgress(current, initial, target) {
-	const props = {
-		current: current.getHistogram(),
-		initial: initial.getHistogram(),
-		target: target.getHistogram()
-	};
+	let total = 0;
+	let match = 0;
 
-	return Promise.all([props.current, props.initial, props.target]).then((results) => {
-		let total = 0;
-		let match = 0;
+	const currentHist = current.getHistogram();
+	const initialHist = initial.getHistogram();
+	const targetHist = target.getHistogram();
 
-		for (let channel = 0; channel < 3; channel++) {
-			for (let pixelVal = 0; pixelVal < 256; pixelVal++) {
-				const currentCount = results[0][channel][pixelVal];
-				const initialCount = results[1][channel][pixelVal];
-				const targetCount = results[2][channel][pixelVal];
+	for (let channel = 0; channel < 3; channel++) {
+		for (let pixelVal = 0; pixelVal < 256; pixelVal++) {
+			const currentCount = currentHist[channel][pixelVal];
+			const initialCount = initialHist[channel][pixelVal];
+			const targetCount = targetHist[channel][pixelVal];
 
-				const currentDiff = Math.abs(currentCount - initialCount);
-				const targetDiff = Math.abs(targetCount - initialCount);
+			const currentDiff = Math.abs(currentCount - initialCount);
+			const targetDiff = Math.abs(targetCount - initialCount);
 
-				match += Math.min(currentDiff, targetDiff);
-				total += targetDiff;
-			}
+			match += Math.min(currentDiff, targetDiff);
+			total += targetDiff;
 		}
+	}
 
-		let progress;
-		if (match === 0 && total === 0) {	// All images are the same
-			progress = 100;
-		} else {													// When images differs
-			progress = Math.floor(match / total * 100);
-		}
-		return progress;
-	});
+	let progress;
+	if (match === 0 && total === 0) {	// All images are the same
+		progress = 100;
+	} else {													// When images differs
+		progress = Math.floor(match / total * 100);
+	}
+	return progress;
 }
 
 function calculateVisualProgress(frames) {
 	const initial = frames[0];
 	const target = frames[frames.length - 1];
 
-	return Promise.all(frames.map(f => calculateFrameProgress(f, initial, target)))
-		.then(v => v.forEach((progress, index) => frames[index].setProgress(progress)))
-		.then(() => frames);
+	frames.forEach(function (frame) {
+		const progress = calculateFrameProgress(frame, initial, target);
+		frame.setProgress(progress);
+	});
+
+	return frames;
 }
 
 function calculateSpeedIndex(frames) {
