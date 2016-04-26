@@ -52,8 +52,8 @@ function convertJPGToHistogram(imgBuff) {
 	return getPixels(imgBuff).then(convertPixelsToHistogram);
 }
 
-function extractFramesFromTimeline(timelinePath) {
-	const trace = fs.readFileSync(timelinePath, 'utf-8');
+function extractFramesFromTimeline(timeline) {
+	const trace = typeof timeline === 'string' ? fs.readFileSync(timeline, 'utf-8') : timeline;
 
 	const model = new DevtoolsTimelineModel(trace);
 	const rawFrames = model.filmStripModel().frames();
