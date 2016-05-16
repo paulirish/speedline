@@ -37,13 +37,19 @@ function displayPretty(res) {
 		`${bold('First visual change')}: ${green(res.first + ' ms')}`,
 		`${bold('Last visual change')}: ${green(res.complete + ' ms')}`,
 		`${bold('Speed Index')}: ${green(res.speedIndex)}`,
+		`${bold('Pervieved Speed Index')}: ${green(res.percievedSpeedIndex)}`,
 		'',
-		`${bold('Histogram:')}`
+		`${bold('Histogram visual progress:')}`
 	].join('\n'));
 
 	var baseTs = res.frames[0].getTimeStamp();
+
 	var progress = res.frames.map(frame => [frame.getTimeStamp() - baseTs, frame.getProgress()]);
 	console.log(babar(progress));
+
+	console.log(bold('Histogram percieved visual progress:'));
+	var percievedProgress = res.frames.map(frame => [frame.getTimeStamp() - baseTs, frame.getPercievedProgress()]);
+	console.log(babar(percievedProgress));
 }
 
 function handleError(err) {

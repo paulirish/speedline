@@ -25,12 +25,15 @@ function calculateValues(frames) {
 		}
 	}
 
+	const {speedIndex, percievedSpeedIndex} = calculateSpeedIndex(frames);
+
 	return {
 		frames,
 		first,
 		complete,
 		duration,
-		speedIndex: Math.floor(calculateSpeedIndex(frames))
+		speedIndex,
+		percievedSpeedIndex
 	};
 }
 
