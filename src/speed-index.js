@@ -33,7 +33,19 @@ function calculateFrameProgress(current, initial, target) {
 	return progress;
 }
 
-function calculatePercievedProgress(frame, target) {
+function calculateVisualProgress(frames) {
+	const initial = frames[0];
+	const target = frames[frames.length - 1];
+
+	frames.forEach(function (frame) {
+		const progress = calculateFrameProgress(frame, initial, target);
+		frame.setProgress(progress);
+	});
+
+	return frames;
+}
+
+function calculateFrameSimilarity(frame, target) {
 	const defaultImageConfig = {
 		channels: 3
 	};
@@ -45,24 +57,20 @@ function calculatePercievedProgress(frame, target) {
 	return diff.ssim;
 }
 
-function calculateVisualProgress(frames) {
-	const initial = frames[0];
+function calculatePercievedProgress(frames) {
 	const target = frames[frames.length - 1];
 
-	// Calculate visual progress
-	frames.forEach(function (frame) {
-		const progress = calculateFrameProgress(frame, initial, target);
-		frame.setProgress(progress);
-	});
+	// Calculate frames simliarity between each frames and the final
+	const framesSimilarity = frames
+		.map(frame => calculateFrameSimilarity(frame, target));
 
-	// Percieved progress need a little more work
-	// Remap the values from [minProgress, 1] to [0, 100]
-	const percievedProgress = frames
-		.map(frame => calculatePercievedProgress(frame, target));
-	const minPrecievedProgress = percievedProgress
+	// Get the min frame similarity value
+	const minPrecievedProgress = framesSimilarity
 		.reduce((min, progress) => Math.min(min, progress), Infinity);
 
-	percievedProgress
+	// Remap the values from [minPrecievedProgress, 1], to [0, 100] interval
+	// to be consistent with the standard visual progress
+	framesSimilarity
 		.map(progress => {
 			const oldRange = 1 - minPrecievedProgress;
 			return ((progress - minPrecievedProgress) * 100) / oldRange;
@@ -72,7 +80,7 @@ function calculateVisualProgress(frames) {
 	return frames;
 }
 
-function calculateSpeedIndex(frames) {
+function calculateSpeedIndexes(frames) {
 	let speedIndex = 0;
 	let percievedSpeedIndex = 0;
 
@@ -99,5 +107,6 @@ function calculateSpeedIndex(frames) {
 
 module.exports = {
 	calculateVisualProgress,
-	calculateSpeedIndex
+	calculatePercievedProgress,
+	calculateSpeedIndexes
 };
