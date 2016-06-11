@@ -49,13 +49,25 @@ function calculateVisualProgress(frames) {
 	const initial = frames[0];
 	const target = frames[frames.length - 1];
 
+	// Calculate visual progress
 	frames.forEach(function (frame) {
 		const progress = calculateFrameProgress(frame, initial, target);
 		frame.setProgress(progress);
-
-		const percievedProgress = calculatePercievedProgress(frame, target);
-		frame.setPercievedProgress(percievedProgress);
 	});
+
+	// Percieved progress need a little more work
+	// Remap the values from [minProgress, 1] to [0, 100]
+	const percievedProgress = frames
+		.map(frame => calculatePercievedProgress(frame, target))
+	const minPrecievedProgress = percievedProgress
+		.reduce((min, progress) => Math.min(min, progress), Infinity);
+
+	percievedProgress
+		.map(progress => {
+			const oldRange = 1 - minPrecievedProgress;
+			return ((progress - minPrecievedProgress) * 100) / oldRange
+		})
+		.forEach((progress, index) => frames[index].setPercievedProgress(progress))
 
 	return frames;
 }
@@ -76,7 +88,7 @@ function calculateSpeedIndex(frames) {
 
 		lastTs = frame.getTimeStamp();
 		lastProgress = frame.getProgress() / 100;
-		lastPercievedProgress = frame.getPercievedProgress();
+		lastPercievedProgress = frame.getPercievedProgress() / 100;
 	});
 
 	return {
