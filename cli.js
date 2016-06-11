@@ -37,7 +37,7 @@ function displayPretty(res) {
 		`${bold('First visual change')}: ${green(res.first + ' ms')}`,
 		`${bold('Last visual change')}: ${green(res.complete + ' ms')}`,
 		`${bold('Speed Index')}: ${green(res.speedIndex)}`,
-		`${bold('Pervieved Speed Index')}: ${green(res.percievedSpeedIndex)}`,
+		`${bold('Percieved Speed Index')}: ${green(res.percievedSpeedIndex)}`,
 		'',
 		`${bold('Histogram visual progress:')}`
 	].join('\n'));
