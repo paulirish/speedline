@@ -8,6 +8,8 @@ The [Navigation Timing API](https://developer.mozilla.org/en-US/docs/Web/API/Nav
 
 The [Speed Index](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/metrics/speed-index), introduced by [WebpageTest.org](http://www.webpagetest.org/), aims to solve this issue. It measures **how fast the page content is visually displayed**. The current implementation is based on the **Visual Progress from Video Capture** calculation method described on the [Speed Index](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/metrics/speed-index) page. The visual progress is calculated by comparing the distance between the histogram of the current frame and the final frame.
 
+Speedline also calculates the **perceptual speed index**, based on the same principal as the original speed index, but it computes the visual progression between frames using the [SSIM](https://en.wikipedia.org/wiki/Structural_similarity) instead of the histogram distance.
+
 ## CLI
 
 ### Install
@@ -60,6 +62,7 @@ speedline('./timeline').then(results => {
 * (string) `timelinePath`
 * returns (Promise) resolving with an object containing:
   * `speedIndex` (number) - speed index value.
+  * `perceptualSpeedIndex` (number) - perceptual speed index value.
   * `first` (number) - duration before the first visual change in ms.
   * `complete` (number) - duration before the last visual change in ms.
   * `duration` (number) - timeline recording duration in ms.
@@ -73,6 +76,7 @@ Object representing a single screenshot.
 * `frame.getTimeStamp()`: (number) - return the frame timestamp.
 * `frame.getImage()`: (Buffer) - return the frame content.
 * `frame.getProgress()`: (number) - return the frame visual progress.
+* `frame.getPerceptualProgress()`: (number) - return the frame perceptual visual progress.
 
 
 ## License
