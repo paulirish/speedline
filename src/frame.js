@@ -71,7 +71,7 @@ function extractFramesFromTimeline(timeline) {
 function frame(imgBuff, ts) {
 	let _histogram = null;
 	let _progress = null;
-	let _percievedProgress = null;
+	let _perceivedProgress = null;
 
 	return {
 		getHistogram: function () {
@@ -92,8 +92,8 @@ function frame(imgBuff, ts) {
 			_progress = progress;
 		},
 
-		setPercievedProgress: function (progress) {
-			_percievedProgress = progress;
+		setPerceivedProgress: function (progress) {
+			_perceivedProgress = progress;
 		},
 
 		getImage: function () {
@@ -108,8 +108,8 @@ function frame(imgBuff, ts) {
 			return _progress;
 		},
 
-		getPercievedProgress: function () {
-			return _percievedProgress;
+		getPerceivedProgress: function () {
+			return _perceivedProgress;
 		}
 	};
 }

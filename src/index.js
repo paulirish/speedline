@@ -4,7 +4,7 @@ import frame from './frame';
 import {
 	calculateVisualProgress,
 	calculateSpeedIndexes,
-	calculatePercievedProgress
+	calculatePerceivedProgress
 } from './speed-index';
 
 function calculateValues(frames) {
@@ -26,7 +26,7 @@ function calculateValues(frames) {
 		}
 	}
 
-	const {speedIndex, percievedSpeedIndex} = calculateSpeedIndexes(frames);
+	const {speedIndex, perceivedSpeedIndex} = calculateSpeedIndexes(frames);
 
 	return {
 		frames,
@@ -34,7 +34,7 @@ function calculateValues(frames) {
 		complete,
 		duration,
 		speedIndex,
-		percievedSpeedIndex
+		perceivedSpeedIndex
 	};
 }
 
@@ -46,7 +46,7 @@ function calculateValues(frames) {
 module.exports = function (timeline) {
 	return frame.extractFramesFromTimeline(timeline).then(function (frames) {
 		calculateVisualProgress(frames);
-		calculatePercievedProgress(frames);
+		calculatePerceivedProgress(frames);
 		return calculateValues(frames);
 	});
 };

@@ -57,7 +57,7 @@ function calculateFrameSimilarity(frame, target) {
 	return diff.ssim;
 }
 
-function calculatePercievedProgress(frames) {
+function calculatePerceivedProgress(frames) {
 	const target = frames[frames.length - 1];
 
 	// Calculate frames simliarity between each frames and the final
@@ -65,48 +65,48 @@ function calculatePercievedProgress(frames) {
 		.map(frame => calculateFrameSimilarity(frame, target));
 
 	// Get the min frame similarity value
-	const minPrecievedProgress = framesSimilarity
+	const minPreceivedProgress = framesSimilarity
 		.reduce((min, progress) => Math.min(min, progress), Infinity);
 
-	// Remap the values from [minPrecievedProgress, 1], to [0, 100] interval
+	// Remap the values from [minPreceivedProgress, 1], to [0, 100] interval
 	// to be consistent with the standard visual progress
 	framesSimilarity
 		.map(progress => {
-			const oldRange = 1 - minPrecievedProgress;
-			return ((progress - minPrecievedProgress) * 100) / oldRange;
+			const oldRange = 1 - minPreceivedProgress;
+			return ((progress - minPreceivedProgress) * 100) / oldRange;
 		})
-		.forEach((progress, index) => frames[index].setPercievedProgress(progress));
+		.forEach((progress, index) => frames[index].setPerceivedProgress(progress));
 
 	return frames;
 }
 
 function calculateSpeedIndexes(frames) {
 	let speedIndex = 0;
-	let percievedSpeedIndex = 0;
+	let perceivedSpeedIndex = 0;
 
 	let lastTs = frames[0].getTimeStamp();
 	let lastProgress = frames[0].getProgress();
-	let lastPercievedProgress = frames[0].getPercievedProgress();
+	let lastPerceivedProgress = frames[0].getPerceivedProgress();
 
 	frames.forEach(function (frame) {
 		const elapsed = frame.getTimeStamp() - lastTs;
 
 		speedIndex += elapsed * (1 - lastProgress);
-		percievedSpeedIndex += elapsed * (1 - lastPercievedProgress);
+		perceivedSpeedIndex += elapsed * (1 - lastPerceivedProgress);
 
 		lastTs = frame.getTimeStamp();
 		lastProgress = frame.getProgress() / 100;
-		lastPercievedProgress = frame.getPercievedProgress() / 100;
+		lastPerceivedProgress = frame.getPerceivedProgress() / 100;
 	});
 
 	return {
 		speedIndex,
-		percievedSpeedIndex
+		perceivedSpeedIndex
 	};
 }
 
 module.exports = {
 	calculateVisualProgress,
-	calculatePercievedProgress,
+	calculatePerceivedProgress,
 	calculateSpeedIndexes
 };
