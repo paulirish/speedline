@@ -49,5 +49,5 @@ test('speed index calculate the right value', async t => {
 
 	const indexes = speedIndex.calculateSpeedIndexes(frames);
 	t.is(indexes.speedIndex, 1000);
-	t.is(indexes.perceivedSpeedIndex, 1000);
+	t.is(indexes.perceptualSpeedIndex, 1000);
 });
