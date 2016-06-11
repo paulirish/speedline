@@ -58,16 +58,16 @@ function calculateVisualProgress(frames) {
 	// Percieved progress need a little more work
 	// Remap the values from [minProgress, 1] to [0, 100]
 	const percievedProgress = frames
-		.map(frame => calculatePercievedProgress(frame, target))
+		.map(frame => calculatePercievedProgress(frame, target));
 	const minPrecievedProgress = percievedProgress
 		.reduce((min, progress) => Math.min(min, progress), Infinity);
 
 	percievedProgress
 		.map(progress => {
 			const oldRange = 1 - minPrecievedProgress;
-			return ((progress - minPrecievedProgress) * 100) / oldRange
+			return ((progress - minPrecievedProgress) * 100) / oldRange;
 		})
-		.forEach((progress, index) => frames[index].setPercievedProgress(progress))
+		.forEach((progress, index) => frames[index].setPercievedProgress(progress));
 
 	return frames;
 }
