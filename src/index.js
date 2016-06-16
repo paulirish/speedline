@@ -3,7 +3,8 @@
 import frame from './frame';
 import {
 	calculateVisualProgress,
-	calculateSpeedIndex
+	calculateSpeedIndexes,
+	calculatePerceptualProgress
 } from './speed-index';
 
 function calculateValues(frames) {
@@ -25,12 +26,15 @@ function calculateValues(frames) {
 		}
 	}
 
+	const {speedIndex, perceptualSpeedIndex} = calculateSpeedIndexes(frames);
+
 	return {
 		frames,
 		first,
 		complete,
 		duration,
-		speedIndex: Math.floor(calculateSpeedIndex(frames))
+		speedIndex,
+		perceptualSpeedIndex
 	};
 }
 
@@ -42,6 +46,7 @@ function calculateValues(frames) {
 module.exports = function (timeline) {
 	return frame.extractFramesFromTimeline(timeline).then(function (frames) {
 		calculateVisualProgress(frames);
+		calculatePerceptualProgress(frames);
 		return calculateValues(frames);
 	});
 };

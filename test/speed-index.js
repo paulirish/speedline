@@ -41,11 +41,13 @@ test('visual progress should have 0 and 100 for different images', async t => {
 	t.is(frames[1].getProgress(), 100);
 });
 
-test('speed index calculate teh right value', async t => {
+test('speed index calculate the right value', async t => {
 	const frames = calculateVisualProgressFromImages([
 		'./assets/Solid_black.jpg',
 		'./assets/grayscale.jpg'
 	]);
 
-	t.is(speedIndex.calculateSpeedIndex(frames), 1000);
+	const indexes = speedIndex.calculateSpeedIndexes(frames);
+	t.is(indexes.speedIndex, 1000);
+	t.is(indexes.perceptualSpeedIndex, 1000);
 });
