@@ -46,7 +46,7 @@ function convertPixelsToHistogram(img) {
 
 function extractFramesFromTimeline(timeline) {
 	let model;
-	if (timeline.frameModel) {
+	if (timeline instanceof DevtoolsTimelineModel) {
 		model = timeline;
 	} else {
 		const trace = typeof timeline === 'string' ? fs.readFileSync(timeline, 'utf-8') : timeline;
