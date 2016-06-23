@@ -45,9 +45,13 @@ function convertPixelsToHistogram(img) {
 }
 
 function extractFramesFromTimeline(timeline) {
-	const trace = typeof timeline === 'string' ? fs.readFileSync(timeline, 'utf-8') : timeline;
-
-	const model = new DevtoolsTimelineModel(trace);
+	let model;
+	if (timeline.frameModel) {
+		model = timeline;
+	} else {
+		const trace = typeof timeline === 'string' ? fs.readFileSync(timeline, 'utf-8') : timeline;
+		model = new DevtoolsTimelineModel(trace);
+	}
 	const rawFrames = model.filmStripModel().frames();
 
 	const timelineModel = model.timelineModel();
