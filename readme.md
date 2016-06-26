@@ -57,9 +57,9 @@ speedline('./timeline').then(results => {
 
 ### API
 
-#### `speedline(timelinePath)`
+#### `speedline(timeline)`
 
-* (string) `timelinePath`
+* (string | object[] | DevtoolsTimelineModel) `timeline`
 * returns (Promise) resolving with an object containing:
   * `speedIndex` (number) - speed index value.
   * `perceptualSpeedIndex` (number) - perceptual speed index value.
@@ -67,6 +67,11 @@ speedline('./timeline').then(results => {
   * `complete` (number) - duration before the last visual change in ms.
   * `duration` (number) - timeline recording duration in ms.
   * `frames` ([Frame](#frame)[]) - array of all the frames extracted from the timeline.
+
+If the type of the timeline parameter is:
+* `string` - the parameter represents the location of the of file containing the timeline.
+* `array` - the parameter represents the content of the timeline file.
+* `DevtoolsTimelineModel` - the parameter represents the parsed content of the timeline. It avoids recomputing the timeline model if you call this method several times.
 
 #### `Frame`
 
