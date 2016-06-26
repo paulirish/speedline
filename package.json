@@ -19,10 +19,6 @@
     "test": "npm run build && xo && ava",
     "prepublish": "npm run build"
   },
-  "files": [
-    "lib",
-    "cli.js"
-  ],
   "keywords": [
     "chrome",
     "devtool",
