@@ -27,8 +27,11 @@ function display(res) {
 	const log = [
 		`First Visual Change: ${res.first}`,
 		`Visually Complete: ${res.complete}`,
+		'',
 		`Speed Index: ${res.speedIndex}`,
 		`Visual Progress: ${visualProgress}`,
+		'',
+		`Perceptual Speed Index: ${res.speedIndex}`,
 		`Perceptual Visual Progress: ${visualPreceptualProgress}`
 	].join(`\n`);
 	console.log(log);
