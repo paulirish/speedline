@@ -33,16 +33,16 @@ function calculateFrameProgress(current, initial, target) {
 	return progress;
 }
 
-function calculateVisualProgress(frames) {
-	const initial = frames[0];
-	const target = frames[frames.length - 1];
+function calculateVisualProgress(framesObj) {
+	const initial = framesObj.firstFrame;
+	const target = framesObj.lastFrame;
 
-	frames.forEach(function (frame) {
+	framesObj.allFrames.forEach(function (frame) {
 		const progress = calculateFrameProgress(frame, initial, target);
 		frame.setProgress(progress);
 	});
 
-	return frames;
+	return framesObj;
 }
 
 function calculateFrameSimilarity(frame, target) {
@@ -57,11 +57,11 @@ function calculateFrameSimilarity(frame, target) {
 	return diff.ssim;
 }
 
-function calculatePerceptualProgress(frames) {
-	const target = frames[frames.length - 1];
+function calculatePerceptualProgress(framesObj) {
+	const target = framesObj.lastFrame;
 
 	// Calculate frames simliarity between each frames and the final
-	const framesSimilarity = frames
+	const framesSimilarity = framesObj.allFrames
 		.map(frame => calculateFrameSimilarity(frame, target));
 
 	// Get the min frame similarity value
@@ -72,12 +72,15 @@ function calculatePerceptualProgress(frames) {
 	// to be consistent with the standard visual progress
 	framesSimilarity
 		.map(progress => {
+			if (progress === minPreceptualProgress) { // Images are the same
+				return 100;
+			}
 			const oldRange = 1 - minPreceptualProgress;
 			return ((progress - minPreceptualProgress) * 100) / oldRange;
 		})
-		.forEach((progress, index) => frames[index].setPerceptualProgress(progress));
+		.forEach((progress, index) => framesObj.allFrames[index].setPerceptualProgress(progress));
 
-	return frames;
+	return framesObj;
 }
 
 function calculateSpeedIndexes(frames) {
@@ -87,6 +90,13 @@ function calculateSpeedIndexes(frames) {
 	let lastTs = frames[0].getTimeStamp();
 	let lastProgress = frames[0].getProgress();
 	let lastPerceptualProgress = frames[0].getPerceptualProgress();
+
+	if (frames.length === 1) {
+		return {
+			speedIndex: lastTs,
+			perceptualSpeedIndex: lastTs
+		}
+	}
 
 	frames.forEach(function (frame) {
 		const elapsed = frame.getTimeStamp() - lastTs;

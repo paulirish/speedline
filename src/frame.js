@@ -55,8 +55,8 @@ function extractFramesFromTimeline(timeline) {
 	let events = trace.traceEvents || trace;
 	events = events.sort((a, b) => a.ts - b.ts).filter(e => e.ts !== 0);
 
-	const start = events[0].ts / 1000;
-	const end = events[events.length - 1].ts / 1000;
+	const startTs = events[0].ts / 1000;
+	const endTs = events[events.length - 1].ts / 1000;
 
 	const rawScreenshots = events.filter(e => e.cat.includes(screenshotTraceCategory));
 	const frames = rawScreenshots.map(function (evt) {
@@ -66,10 +66,15 @@ function extractFramesFromTimeline(timeline) {
 		const imgBuff = new Buffer(base64img, 'base64');
 		return frame(imgBuff, timestamp);
 	});
-
-	const firstFrame = frame(frames[0].getImage(), start);
-	const lastFrame = frame(frames[frames.length - 1].getImage(), end);
-	return Promise.resolve([firstFrame, ...frames, lastFrame]);
+	const framesObj = {
+		startTs,
+		endTs,
+		firstFrame: frames[0],
+		lastFrame: frames[frames.length - 1],
+		middleFrames: frames.slice(1, frames.length - 1),
+		allFrames: frames
+	};
+	return Promise.resolve(framesObj);
 }
 
 function frame(imgBuff, ts) {

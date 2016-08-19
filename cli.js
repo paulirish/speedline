@@ -13,17 +13,23 @@ const OUTPUT_BOLD = '\x1b[1m';
 const OUTPUT_RESET = '\x1b[22m\x1b[39m';
 
 function display(res) {
-	const startTs = res.frames[0].getTimeStamp();
+	const startTs = res.beginning;
 	const visualProgress = res.frames.map(frame => {
 		const ts = Math.floor(frame.getTimeStamp() - startTs);
 		return `${ts}=${Math.floor(frame.getProgress())}%`;
+	}).join(', ');
+
+	const visualPreceptualProgress = res.frames.map(frame => {
+		const ts = Math.floor(frame.getTimeStamp() - startTs);
+		return `${ts}=${Math.floor(frame.getPerceptualProgress())}%`;
 	}).join(', ');
 
 	const log = [
 		`First Visual Change: ${res.first}`,
 		`Visually Complete: ${res.complete}`,
 		`Speed Index: ${res.speedIndex}`,
-		`Visual Progress: ${visualProgress}`
+		`Visual Progress: ${visualProgress}`,
+		`Perceptual Visual Progress: ${visualPreceptualProgress}`
 	].join(`\n`);
 	console.log(log);
 }

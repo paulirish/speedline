@@ -7,10 +7,12 @@ import {
 	calculatePerceptualProgress
 } from './speed-index';
 
-function calculateValues(frames) {
-	const startTs = frames[0].getTimeStamp();
-	const endTs = frames[frames.length - 1].getTimeStamp();
+function calculateValues(framesObj) {
+	const startTs = framesObj.startTs;
+	const endTs = framesObj.endTs;
 	const duration = Math.floor(endTs - startTs);
+
+	const frames = framesObj.allFrames;
 
 	let complete;
 	for (let i = 0; i < frames.length && !complete; i++) {
@@ -26,9 +28,15 @@ function calculateValues(frames) {
 		}
 	}
 
-	const {speedIndex, perceptualSpeedIndex} = calculateSpeedIndexes(frames);
+	let {speedIndex, perceptualSpeedIndex} = calculateSpeedIndexes(frames);
+
+	if (frames.length === 1) {
+		speedIndex = perceptualSpeedIndex = first;
+	}
 
 	return {
+		beginning: startTs,
+		end: endTs,
 		frames,
 		first,
 		complete,
@@ -44,9 +52,9 @@ function calculateValues(frames) {
  * @return {Promise} resolving with an object containing the speed index informations
  */
 module.exports = function (timeline) {
-	return frame.extractFramesFromTimeline(timeline).then(function (frames) {
-		calculateVisualProgress(frames);
-		calculatePerceptualProgress(frames);
-		return calculateValues(frames);
+	return frame.extractFramesFromTimeline(timeline).then(function (framesObj) {
+		calculateVisualProgress(framesObj);
+		calculatePerceptualProgress(framesObj);
+		return calculateValues(framesObj);
 	});
 };
