@@ -13,10 +13,10 @@ const OUTPUT_BOLD = '\x1b[1m';
 const OUTPUT_RESET = '\x1b[22m\x1b[39m';
 
 function display(res) {
-	const startTs = res.frames[0].getTimeStamp();
+	const startTs = res.start;
 	const visualProgress = res.frames.map(frame => {
-		const ts = Math.floor(frame.getTimeStamp() - startTs);
-		return `${ts}=${Math.floor(frame.getProgress())}%`;
+		const ts = Math.floor(frame.params.timestamp - startTs);
+		return `${ts}=${Math.floor(frame.params.encodedDataLength)}%`;
 	}).join(', ');
 
 	const log = [
@@ -33,23 +33,19 @@ function displayPretty(res) {
 	const bold = (content) => OUTPUT_BOLD + content + OUTPUT_RESET;
 
 	console.log([
-		`${bold('Recording duration')}: ${green(res.duration + ' ms')}`,
-		`${bold('First visual change')}: ${green(res.first + ' ms')}`,
-		`${bold('Last visual change')}: ${green(res.complete + ' ms')}`,
-		`${bold('Speed Index')}: ${green(res.speedIndex)}`,
-		`${bold('Perceptual Speed Index')}: ${green(res.perceptualSpeedIndex)}`,
-		'',
-		`${bold('Histogram visual progress:')}`
+
+		`${bold('Download throughput:')}`
 	].join('\n'));
 
-	var baseTs = res.frames[0].getTimeStamp();
+	var baseTs = res.frames[0].params.timestamp;
 
-	var progress = res.frames.map(frame => [frame.getTimeStamp() - baseTs, frame.getProgress()]);
-	console.log(babar(progress));
+	var progress = res.frames.map(frame => {
+		// const time = Math.floor((frame.params.timestamp - baseTs) / 1000);
+		const time = (frame.params.timestamp - baseTs) * 1000;
+		return [Math.floor(time), frame.params.encodedDataLength]
+	});
+	console.log(babar(progress, {width: 190}));
 
-	console.log(bold('Histogram perceptual visual progress:'));
-	var perceptualProgress = res.frames.map(frame => [frame.getTimeStamp() - baseTs, frame.getPerceptualProgress()]);
-	console.log(babar(perceptualProgress));
 }
 
 function handleError(err) {

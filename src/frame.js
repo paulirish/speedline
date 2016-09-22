@@ -44,32 +44,17 @@ function convertPixelsToHistogram(img) {
 	return histograms;
 }
 
-function extractFramesFromTimeline(timeline) {
-	let model;
-	if (timeline instanceof DevtoolsTimelineModel) {
-		model = timeline;
-	} else {
-		const trace = typeof timeline === 'string' ? fs.readFileSync(timeline, 'utf-8') : timeline;
-		model = new DevtoolsTimelineModel(trace);
+function extractPacketsFromTimeline(timeline) {
+
+  let trace;
+	trace = typeof timeline === 'string' ? fs.readFileSync(timeline, 'utf-8') : timeline;
+	try {
+			trace = typeof trace === 'string' ? JSON.parse(trace) : trace;
+	} catch (e) {
+			throw new Error('Speedline: Invalid JSON' + e.message);
 	}
-	const rawFrames = model.filmStripModel().frames();
 
-	const timelineModel = model.timelineModel();
-	const start = timelineModel.minimumRecordTime();
-	const end = timelineModel.maximumRecordTime();
-
-	return Promise.all(rawFrames.map(f => f.imageDataPromise())).then(ret => {
-		return Promise.all(ret.map(function (img, index) {
-			const imgBuff = new Buffer(img, 'base64');
-			return frame(imgBuff, rawFrames[index].timestamp);
-		}))
-		.then(function (frames) {
-			const firstFrame = frame(frames[0].getImage(), start);
-			const lastFrame = frame(frames[frames.length - 1].getImage(), end);
-
-			return [firstFrame, ...frames, lastFrame];
-		});
-	});
+	return events.filter(e => e.method === 'Network.dataReceived')
 }
 
 function frame(imgBuff, ts) {

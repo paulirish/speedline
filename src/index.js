@@ -44,7 +44,8 @@ function calculateValues(frames) {
  * @return {Promise} resolving with an object containing the speed index informations
  */
 module.exports = function (timeline) {
-	return frame.extractFramesFromTimeline(timeline).then(function (frames) {
+	return frame.extractPacketsFromTimeline(timeline).then(function (frames) {
+		console.error('sdfs', frames.length)
 		calculateVisualProgress(frames);
 		calculatePerceptualProgress(frames);
 		return calculateValues(frames);
