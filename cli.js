@@ -42,11 +42,11 @@ function displayPretty(res) {
 	const bold = (content) => OUTPUT_BOLD + content + OUTPUT_RESET;
 
 	console.log([
-		`${bold('Recording duration')}: ${green(res.duration + ' ms')}`,
+		`${bold('Recording duration')}: ${green(res.duration + ' ms')}  (${res.frames.length} frames found)`,
 		`${bold('First visual change')}: ${green(res.first + ' ms')}`,
 		`${bold('Last visual change')}: ${green(res.complete + ' ms')}`,
-		`${bold('Speed Index')}: ${green(res.speedIndex)}`,
-		`${bold('Perceptual Speed Index')}: ${green(res.perceptualSpeedIndex)}`,
+		`${bold('Speed Index')}: ${green(res.speedIndex.toFixed(1))}`,
+		`${bold('Perceptual Speed Index')}: ${green(res.perceptualSpeedIndex.toFixed(1))}`,
 		'',
 		`${bold('Histogram visual progress:')}`
 	].join('\n'));

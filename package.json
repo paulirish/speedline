@@ -15,7 +15,7 @@
     "node": ">=5.0"
   },
   "scripts": {
-    "build": "babel -d lib/ src/ && node cli.js  ~/Downloads/TimelineRawData-20160808T103933.json --pretty",
+    "build": "babel -d lib/ src/",
     "test": "npm run build && xo && ava",
     "prepublish": "npm run build"
   },
