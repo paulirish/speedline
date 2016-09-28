@@ -2,6 +2,8 @@
 
 const imageSSIM = require('image-ssim');
 
+const fs = require('fs');
+
 function calculateFrameProgress(current, initial, target) {
 	let total = 0;
 	let match = 0;
@@ -37,6 +39,7 @@ function calculateVisualProgress(framesObj) {
 	const initial = framesObj.firstFrame;
 	const target = framesObj.lastFrame;
 
+
 	framesObj.allFrames.forEach(function (frame) {
 		const progress = calculateFrameProgress(frame, initial, target);
 		frame.setProgress(progress);
@@ -60,6 +63,8 @@ function calculateFrameSimilarity(frame, target) {
 function calculatePerceptualProgress(framesObj) {
 	const target = framesObj.lastFrame;
 
+	//  fs.writeFileSync(`targetframe-${Date.now()}.jpg`, framesObj.lastFrame.getImage(), 'base64');
+
 	// Calculate frames simliarity between each frames and the final
 	const framesSimilarity = framesObj.allFrames
 		.map(frame => calculateFrameSimilarity(frame, target));
@@ -70,43 +75,47 @@ function calculatePerceptualProgress(framesObj) {
 
 	// Remap the values from [minPreceptualProgress, 1], to [0, 100] interval
 	// to be consistent with the standard visual progress
-	framesSimilarity
+	const normalizedSimilarity = framesSimilarity
 		.map(progress => {
 			if (progress === minPreceptualProgress) { // Images are the same
-				return 100;
+				return 0;
 			}
 			const oldRange = 1 - minPreceptualProgress;
 			return ((progress - minPreceptualProgress) * 100) / oldRange;
-		})
+		});
+
+	normalizedSimilarity
 		.forEach((progress, index) => framesObj.allFrames[index].setPerceptualProgress(progress));
 
 	return framesObj;
 }
 
-function calculateSpeedIndexes(frames) {
+function calculateSpeedIndexes(framesObj) {
 	let speedIndex = 0;
 	let perceptualSpeedIndex = 0;
 
-	let lastTs = frames[0].getTimeStamp();
-	let lastProgress = frames[0].getProgress();
-	let lastPerceptualProgress = frames[0].getPerceptualProgress();
+	const frames = framesObj.allFrames;
+
+	let prevFrameTs = frames[0].getTimeStamp();
+	let prevProgress = frames[0].getProgress();
+	let prevPerceptualProgress = frames[0].getPerceptualProgress();
 
 	if (frames.length === 1) {
 		return {
-			speedIndex: lastTs,
-			perceptualSpeedIndex: lastTs
-		}
+			speedIndex: prevFrameTs,
+			perceptualSpeedIndex: prevFrameTs
+		};
 	}
 
 	frames.forEach(function (frame) {
-		const elapsed = frame.getTimeStamp() - lastTs;
+		const elapsed = frame.getTimeStamp() - prevFrameTs;
 
-		speedIndex += elapsed * (1 - lastProgress);
-		perceptualSpeedIndex += elapsed * (1 - lastPerceptualProgress);
+		speedIndex += elapsed * (1 - prevProgress);
+		perceptualSpeedIndex += elapsed * (1 - prevPerceptualProgress);
 
-		lastTs = frame.getTimeStamp();
-		lastProgress = frame.getProgress() / 100;
-		lastPerceptualProgress = frame.getPerceptualProgress() / 100;
+		prevFrameTs = frame.getTimeStamp();
+		prevProgress = frame.getProgress() / 100;
+		prevPerceptualProgress = frame.getPerceptualProgress() / 100;
 	});
 
 	return {

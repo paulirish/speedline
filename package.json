@@ -10,12 +10,12 @@
     "url": "github.com/pmdartus"
   },
   "bin": "cli.js",
-  "main": "lib",
+  "main": "src",
   "engines": {
     "node": ">=5.0"
   },
   "scripts": {
-    "build": "babel -d lib/ src/ && node cli.js  ~/code/lighthouse/localhost-10030_2016-08-18T23-01-40.791Z.trace.json",
+    "build": "babel -d lib/ src/ && node cli.js  ~/Downloads/TimelineRawData-20160808T103933.json --pretty",
     "test": "npm run build && xo && ava",
     "prepublish": "npm run build"
   },

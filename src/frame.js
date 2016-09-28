@@ -1,7 +1,7 @@
 'use strict';
 
-import fs from 'fs';
-import jpeg from 'jpeg-js';
+const fs = require('fs');
+const jpeg = require('jpeg-js');
 
 function getPixel(x, y, channel, width, buff) {
 	return buff[(x + y * width) * 4 + channel];

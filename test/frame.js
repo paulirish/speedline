@@ -1,6 +1,6 @@
 import fs from 'fs';
 import test from 'ava';
-import frame from '../lib/frame';
+import frame from '../src/frame';
 
 const DEFAULT_IMAGE = fs.readFileSync('./assets/Solid_black.jpg');
 const DEFAULT_TS = new Date().getTime();

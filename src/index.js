@@ -1,11 +1,12 @@
 'use strict';
 
-import frame from './frame';
-import {
-	calculateVisualProgress,
-	calculateSpeedIndexes,
-	calculatePerceptualProgress
-} from './speed-index';
+const frame = require('./frame');
+const SI = require('./speed-index');
+
+const calculateVisualProgress = SI.calculateVisualProgress;
+const calculateSpeedIndexes = SI.calculateSpeedIndexes;
+const calculatePerceptualProgress = SI.calculatePerceptualProgress;
+
 
 function calculateValues(framesObj) {
 	const startTs = framesObj.startTs;
@@ -28,7 +29,7 @@ function calculateValues(framesObj) {
 		}
 	}
 
-	let {speedIndex, perceptualSpeedIndex} = calculateSpeedIndexes(frames);
+	let {speedIndex, perceptualSpeedIndex} = calculateSpeedIndexes(framesObj);
 
 	if (frames.length === 1) {
 		speedIndex = perceptualSpeedIndex = first;
@@ -53,6 +54,9 @@ function calculateValues(framesObj) {
  */
 module.exports = function (timeline) {
 	return frame.extractFramesFromTimeline(timeline).then(function (framesObj) {
+		if (framesObj.allFrames.length === 0) {
+			throw new Error('No screenshots found in trace');
+		}
 		calculateVisualProgress(framesObj);
 		calculatePerceptualProgress(framesObj);
 		return calculateValues(framesObj);

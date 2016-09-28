@@ -1,6 +1,6 @@
 import path from 'path';
 import test from 'ava';
-import speedline from '../lib';
+import speedline from '../';
 
 const TIMELINE_PATH = path.join(__dirname, 'assets/progressive-app.json');
 

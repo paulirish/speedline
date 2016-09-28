@@ -6,7 +6,7 @@ var meow = require('meow');
 var babar = require('babar');
 var loudRejection = require('loud-rejection');
 
-var speedIndex = require('./lib');
+var speedIndex = require('.');
 
 const OUTPUT_GREEN = '\x1b[32m';
 const OUTPUT_BOLD = '\x1b[1m';
@@ -97,4 +97,6 @@ speedIndex(filePath).then(function (res) {
 	}
 
 	display(res);
-});
+}).catch(err => {
+	handleError(err);
+ });
