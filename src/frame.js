@@ -43,7 +43,7 @@ function convertPixelsToHistogram(img) {
 	return histograms;
 }
 
-const screenshot_trace_category = 'disabled-by-default-devtools.screenshot';
+const screenshotTraceCategory = 'disabled-by-default-devtools.screenshot';
 function extractFramesFromTimeline(timeline) {
 	let trace;
 	trace = typeof timeline === 'string' ? fs.readFileSync(timeline, 'utf-8') : timeline;
@@ -58,7 +58,7 @@ function extractFramesFromTimeline(timeline) {
 	const start = events[0].ts / 1000;
 	const end = events[events.length - 1].ts / 1000;
 
-	const rawScreenshots = events.filter(e => e.cat.includes(screenshot_trace_category));
+	const rawScreenshots = events.filter(e => e.cat.includes(screenshotTraceCategory));
 	const frames = rawScreenshots.map(function (evt) {
 		const base64img = evt.args && evt.args.snapshot;
 		const timestamp = evt.ts / 1000;
