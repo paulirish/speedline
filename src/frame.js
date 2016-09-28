@@ -2,7 +2,6 @@
 
 import fs from 'fs';
 import jpeg from 'jpeg-js';
-import DevtoolsTimelineModel from 'devtools-timeline-model';
 
 function getPixel(x, y, channel, width, buff) {
 	return buff[(x + y * width) * 4 + channel];
@@ -44,32 +43,33 @@ function convertPixelsToHistogram(img) {
 	return histograms;
 }
 
+const screenshotTraceCategory = 'disabled-by-default-devtools.screenshot';
 function extractFramesFromTimeline(timeline) {
-	let model;
-	if (timeline instanceof DevtoolsTimelineModel) {
-		model = timeline;
-	} else {
-		const trace = typeof timeline === 'string' ? fs.readFileSync(timeline, 'utf-8') : timeline;
-		model = new DevtoolsTimelineModel(trace);
+	let trace;
+	trace = typeof timeline === 'string' ? fs.readFileSync(timeline, 'utf-8') : timeline;
+	try {
+		trace = typeof trace === 'string' ? JSON.parse(trace) : trace;
+	} catch (e) {
+		throw new Error('Speedline: Invalid JSON' + e.message);
 	}
-	const rawFrames = model.filmStripModel().frames();
+	let events = trace.traceEvents || trace;
+	events = events.sort((a, b) => a.ts - b.ts).filter(e => e.ts !== 0);
 
-	const timelineModel = model.timelineModel();
-	const start = timelineModel.minimumRecordTime();
-	const end = timelineModel.maximumRecordTime();
+	const start = events[0].ts / 1000;
+	const end = events[events.length - 1].ts / 1000;
 
-	return Promise.all(rawFrames.map(f => f.imageDataPromise())).then(ret => {
-		return Promise.all(ret.map(function (img, index) {
-			const imgBuff = new Buffer(img, 'base64');
-			return frame(imgBuff, rawFrames[index].timestamp);
-		}))
-		.then(function (frames) {
-			const firstFrame = frame(frames[0].getImage(), start);
-			const lastFrame = frame(frames[frames.length - 1].getImage(), end);
+	const rawScreenshots = events.filter(e => e.cat.includes(screenshotTraceCategory));
+	const frames = rawScreenshots.map(function (evt) {
+		const base64img = evt.args && evt.args.snapshot;
+		const timestamp = evt.ts / 1000;
 
-			return [firstFrame, ...frames, lastFrame];
-		});
+		const imgBuff = new Buffer(base64img, 'base64');
+		return frame(imgBuff, timestamp);
 	});
+
+	const firstFrame = frame(frames[0].getImage(), start);
+	const lastFrame = frame(frames[frames.length - 1].getImage(), end);
+	return Promise.resolve([firstFrame, ...frames, lastFrame]);
 }
 
 function frame(imgBuff, ts) {

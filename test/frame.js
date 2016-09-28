@@ -1,6 +1,5 @@
 import fs from 'fs';
 import test from 'ava';
-import DevtoolsTimelineModel from 'devtools-timeline-model';
 import frame from '../lib/frame';
 
 const DEFAULT_IMAGE = fs.readFileSync('./assets/Solid_black.jpg');
@@ -44,12 +43,5 @@ test('extract frames from timeline should returns an array of frames', async t =
 test('extract frames should support json', async t => {
 	const trace = JSON.parse(fs.readFileSync('./assets/progressive-app.json', 'utf-8'));
 	const frames = await frame.extractFramesFromTimeline(trace);
-	t.true(Array.isArray(frames), 'Frames is not an array');
-});
-
-test('extract frames should support a devtools-timeline-model', async t => {
-	const trace = JSON.parse(fs.readFileSync('./assets/progressive-app.json', 'utf-8'));
-	const model = new DevtoolsTimelineModel(trace);
-	const frames = await frame.extractFramesFromTimeline(model);
 	t.true(Array.isArray(frames), 'Frames is not an array');
 });
