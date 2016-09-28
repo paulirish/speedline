@@ -85,24 +85,36 @@ function calculatePerceptualProgress(frames) {
 	return frames;
 }
 
-function calculateSpeedIndexes(frames) {
-	let speedIndex = 0;
-	let perceptualSpeedIndex = 0;
+function calculateSpeedIndexes(frames, data) {
+	const startTs = data.startTs;
+	let visuallyCompleteTs;
+	let firstPaintTs;
+
+	// find first paint
+	for (let i = 0; i < frames.length && !firstPaintTs; i++) {
+		if (frames[i].getProgress() > 0) {
+			firstPaintTs = frames[i].getTimeStamp();
+		}
+	}
+
+	// find visually complete
+	for (let i = 0; i < frames.length && !visuallyCompleteTs; i++) {
+		if (frames[i].getProgress() >= 100) {
+			visuallyCompleteTs = frames[i].getTimeStamp();
+		}
+	}
 
 	let prevFrameTs = frames[0].getTimeStamp();
 	let prevProgress = frames[0].getProgress();
 	let prevPerceptualProgress = frames[0].getPerceptualProgress();
 
-	if (frames.length === 1) {
-		return {
-			speedIndex: prevFrameTs,
-			perceptualSpeedIndex: prevFrameTs
-		};
-	}
+	// SI = firstPaint + sum(fP to VC){1-VC%}
+	//     github.com/pmdartus/speedline/issues/28#issuecomment-244127192
+	let speedIndex = firstPaintTs - startTs;
+	let perceptualSpeedIndex = firstPaintTs - startTs;
 
 	frames.forEach(function (frame) {
 		const elapsed = frame.getTimeStamp() - prevFrameTs;
-
 		speedIndex += elapsed * (1 - prevProgress);
 		perceptualSpeedIndex += elapsed * (1 - prevPerceptualProgress);
 
@@ -112,6 +124,8 @@ function calculateSpeedIndexes(frames) {
 	});
 
 	return {
+		first: firstPaintTs,
+		complete: visuallyCompleteTs,
 		speedIndex,
 		perceptualSpeedIndex
 	};

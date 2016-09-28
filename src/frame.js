@@ -44,7 +44,6 @@ function convertPixelsToHistogram(img) {
 }
 
 function synthesizeWhiteFrame(frames) {
-
 	const firstImageData = jpeg.decode(frames[0].getImage());
 	const width = firstImageData.width;
 	const height = firstImageData.height;

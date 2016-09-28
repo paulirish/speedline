@@ -28,10 +28,10 @@ function display(res) {
 		`First Visual Change: ${res.first}`,
 		`Visually Complete: ${res.complete}`,
 		'',
-		`Speed Index: ${res.speedIndex}`,
+		`Speed Index: ${res.speedIndex.toFixed(1)}`,
 		`Visual Progress: ${visualProgress}`,
 		'',
-		`Perceptual Speed Index: ${res.speedIndex}`,
+		`Perceptual Speed Index: ${res.perceptualSpeedIndex.toFixed(1)}`,
 		`Perceptual Visual Progress: ${visualPreceptualProgress}`
 	].join(`\n`);
 	console.log(log);

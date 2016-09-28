@@ -4,41 +4,20 @@ const frame = require('./frame');
 const speedIndex = require('./speed-index');
 
 function calculateValues(frames, data) {
-	const startTs = data.startTs;
-	const endTs = data.endTs;
-	const duration = Math.floor(endTs - startTs);
-
-	let complete;
-	for (let i = 0; i < frames.length && !complete; i++) {
-		if (frames[i].getProgress() >= 100) {
-			complete = Math.floor(frames[i].getTimeStamp() - startTs);
-		}
-	}
-
-	let first;
-	for (let i = 0; i < frames.length && !first; i++) {
-		if (frames[i].getProgress() > 0) {
-			first = Math.floor(frames[i].getTimeStamp() - startTs);
-		}
-	}
-
-	const results = speedIndex.calculateSpeedIndexes(frames);
-	let siResult = results.speedIndex;
-	let psiResult = results.perceptualSpeedIndex;
-
-	if (frames.length === 1) {
-		siResult = psiResult = first;
-	}
+	const indexes = speedIndex.calculateSpeedIndexes(frames, data);
+	const duration = Math.floor(data.endTs - data.startTs);
+	const first = Math.floor(indexes.first - data.startTs);
+	const complete = Math.floor(indexes.complete - data.startTs);
 
 	return {
-		beginning: startTs,
-		end: endTs,
+		beginning: data.startTs,
+		end: data.endTs,
 		frames,
 		first,
 		complete,
 		duration,
-		speedIndex: siResult,
-		perceptualSpeedIndex: psiResult
+		speedIndex: indexes.speedIndex,
+		perceptualSpeedIndex: indexes.perceptualSpeedIndex
 	};
 }
 
