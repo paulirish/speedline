@@ -20,3 +20,4 @@ test('speedline return object should contain frames informations', async t => {
 	const results = await speedline(TIMELINE_PATH);
 	t.true(Array.isArray(results.frames));
 });
+
