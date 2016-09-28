@@ -36,9 +36,9 @@ test('frames can set and retrieve progress', t => {
 });
 
 test('extract frames from timeline should return a data object with an array of frames', async t => {
-	const frames = await frame.extractFramesFromTimeline('./assets/nyt.json');
-	t.ok(data.startTs, 'data.startTs doesn\'t exist');
-	t.ok(data.endTs, 'data.endTs doesn\'t exist');
+	const data = await frame.extractFramesFromTimeline('./assets/nyt.json');
+	t.truthy(data.startTs, 'data.startTs doesn\'t exist');
+	t.truthy(data.endTs, 'data.endTs doesn\'t exist');
 	t.true(Array.isArray(data.frames), 'Frames is not an array');
 });
 

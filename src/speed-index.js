@@ -2,8 +2,6 @@
 
 const imageSSIM = require('image-ssim');
 
-const fs = require('fs');
-
 function calculateFrameProgress(current, initial, target) {
 	let total = 0;
 	let match = 0;

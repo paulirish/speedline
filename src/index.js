@@ -7,12 +7,10 @@ const calculateVisualProgress = SI.calculateVisualProgress;
 const calculateSpeedIndexes = SI.calculateSpeedIndexes;
 const calculatePerceptualProgress = SI.calculatePerceptualProgress;
 
-
 function calculateValues(frames, data) {
 	const startTs = data.startTs;
 	const endTs = data.endTs;
 	const duration = Math.floor(endTs - startTs);
-
 
 	let complete;
 	for (let i = 0; i < frames.length && !complete; i++) {
@@ -28,7 +26,9 @@ function calculateValues(frames, data) {
 		}
 	}
 
-	let {speedIndex, perceptualSpeedIndex} = calculateSpeedIndexes(frames);
+	const indexes = calculateSpeedIndexes(frames);
+	let speedIndex = indexes.speedIndex;
+	let perceptualSpeedIndex = indexes.perceptualSpeedIndex;
 
 	if (frames.length === 1) {
 		speedIndex = perceptualSpeedIndex = first;
