@@ -43,6 +43,29 @@ function convertPixelsToHistogram(img) {
 	return histograms;
 }
 
+function synthesizeWhiteFrame(frames) {
+
+	const firstImageData = jpeg.decode(frames[0].getImage());
+	const width = firstImageData.width;
+	const height = firstImageData.height;
+
+	const frameData = new Buffer(width * height * 4);
+	let i = 0;
+	while (i < frameData.length) {
+		frameData[i++] = 0xFF; // red
+		frameData[i++] = 0xFF; // green
+		frameData[i++] = 0xFF; // blue
+		frameData[i++] = 0xFF; // alpha - ignored in JPEGs
+	}
+
+	var jpegImageData = jpeg.encode({
+		data: frameData,
+		width: width,
+		height: height
+	});
+	return jpegImageData.data;
+}
+
 const screenshotTraceCategory = 'disabled-by-default-devtools.screenshot';
 function extractFramesFromTimeline(timeline) {
 	let trace;
@@ -68,8 +91,12 @@ function extractFramesFromTimeline(timeline) {
 	});
 
 	if (frames.length === 0) {
-		throw new Error('No screenshots found in trace');
+		Promise.reject(new Error('No screenshots found in trace'));
 	}
+	// add white frame to beginning of trace
+	const fakeWhiteFrame = frame(synthesizeWhiteFrame(frames), startTs);
+	frames.unshift(fakeWhiteFrame);
+
 	const data = {
 		startTs,
 		endTs,
