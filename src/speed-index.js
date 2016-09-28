@@ -35,7 +35,7 @@ function calculateFrameProgress(current, initial, target) {
 
 function calculateVisualProgress(frames) {
 	const initial = frames[0];
-	const target = frames.slice(-1)[0];
+	const target = frames[frames.length - 1];
 
 	frames.forEach(function (frame) {
 		const progress = calculateFrameProgress(frame, initial, target);
@@ -58,9 +58,7 @@ function calculateFrameSimilarity(frame, target) {
 }
 
 function calculatePerceptualProgress(frames) {
-	const target = frames.slice(-1)[0];
-
-	//  fs.writeFileSync(`targetframe-${Date.now()}.jpg`, frames.lastFrame.getImage(), 'base64');
+	const target = frames[frames.length - 1];
 
 	// Calculate frames simliarity between each frames and the final
 	const framesSimilarity = frames

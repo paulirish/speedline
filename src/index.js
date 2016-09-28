@@ -1,11 +1,7 @@
 'use strict';
 
 const frame = require('./frame');
-const SI = require('./speed-index');
-
-const calculateVisualProgress = SI.calculateVisualProgress;
-const calculateSpeedIndexes = SI.calculateSpeedIndexes;
-const calculatePerceptualProgress = SI.calculatePerceptualProgress;
+const speedIndex = require('./speed-index');
 
 function calculateValues(frames, data) {
 	const startTs = data.startTs;
@@ -26,12 +22,12 @@ function calculateValues(frames, data) {
 		}
 	}
 
-	const indexes = calculateSpeedIndexes(frames);
-	let speedIndex = indexes.speedIndex;
-	let perceptualSpeedIndex = indexes.perceptualSpeedIndex;
+	const results = speedIndex.calculateSpeedIndexes(frames);
+	let siResult = results.speedIndex;
+	let psiResult = results.perceptualSpeedIndex;
 
 	if (frames.length === 1) {
-		speedIndex = perceptualSpeedIndex = first;
+		siResult = psiResult = first;
 	}
 
 	return {
@@ -41,8 +37,8 @@ function calculateValues(frames, data) {
 		first,
 		complete,
 		duration,
-		speedIndex,
-		perceptualSpeedIndex
+		speedIndex: siResult,
+		perceptualSpeedIndex: psiResult
 	};
 }
 
@@ -54,8 +50,8 @@ function calculateValues(frames, data) {
 module.exports = function (timeline) {
 	return frame.extractFramesFromTimeline(timeline).then(function (data) {
 		const frames = data.frames;
-		calculateVisualProgress(frames);
-		calculatePerceptualProgress(frames);
+		speedIndex.calculateVisualProgress(frames);
+		speedIndex.calculatePerceptualProgress(frames);
 		return calculateValues(frames, data);
 	});
 };
