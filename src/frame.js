@@ -66,15 +66,16 @@ function extractFramesFromTimeline(timeline) {
 		const imgBuff = new Buffer(base64img, 'base64');
 		return frame(imgBuff, timestamp);
 	});
-	const framesObj = {
+
+	if (frames.length === 0) {
+		throw new Error('No screenshots found in trace');
+	}
+	const data = {
 		startTs,
 		endTs,
-		firstFrame: frames[0],
-		lastFrame: frames[frames.length - 1],
-		middleFrames: frames.slice(1, frames.length - 1),
-		allFrames: frames
+		frames: frames
 	};
-	return Promise.resolve(framesObj);
+	return Promise.resolve(data);
 }
 
 function frame(imgBuff, ts) {

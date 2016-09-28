@@ -35,13 +35,15 @@ test('frames can set and retrieve progress', t => {
 	t.is(f.getProgress(), PROGRESS);
 });
 
-test('extract frames from timeline should returns an array of frames', async t => {
+test('extract frames from timeline should return a data object with an array of frames', async t => {
 	const frames = await frame.extractFramesFromTimeline('./assets/nyt.json');
-	t.true(Array.isArray(frames), 'Frames is not an array');
+	t.ok(data.startTs, 'data.startTs doesn\'t exist');
+	t.ok(data.endTs, 'data.endTs doesn\'t exist');
+	t.true(Array.isArray(data.frames), 'Frames is not an array');
 });
 
 test('extract frames should support json', async t => {
 	const trace = JSON.parse(fs.readFileSync('./assets/progressive-app.json', 'utf-8'));
-	const frames = await frame.extractFramesFromTimeline(trace);
-	t.true(Array.isArray(frames), 'Frames is not an array');
+	const data = await frame.extractFramesFromTimeline(trace);
+	t.true(Array.isArray(data.frames), 'Frames is not an array');
 });

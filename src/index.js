@@ -8,12 +8,11 @@ const calculateSpeedIndexes = SI.calculateSpeedIndexes;
 const calculatePerceptualProgress = SI.calculatePerceptualProgress;
 
 
-function calculateValues(framesObj) {
-	const startTs = framesObj.startTs;
-	const endTs = framesObj.endTs;
+function calculateValues(frames, data) {
+	const startTs = data.startTs;
+	const endTs = data.endTs;
 	const duration = Math.floor(endTs - startTs);
 
-	const frames = framesObj.allFrames;
 
 	let complete;
 	for (let i = 0; i < frames.length && !complete; i++) {
@@ -29,7 +28,7 @@ function calculateValues(framesObj) {
 		}
 	}
 
-	let {speedIndex, perceptualSpeedIndex} = calculateSpeedIndexes(framesObj);
+	let {speedIndex, perceptualSpeedIndex} = calculateSpeedIndexes(frames);
 
 	if (frames.length === 1) {
 		speedIndex = perceptualSpeedIndex = first;
@@ -53,12 +52,10 @@ function calculateValues(framesObj) {
  * @return {Promise} resolving with an object containing the speed index informations
  */
 module.exports = function (timeline) {
-	return frame.extractFramesFromTimeline(timeline).then(function (framesObj) {
-		if (framesObj.allFrames.length === 0) {
-			throw new Error('No screenshots found in trace');
-		}
-		calculateVisualProgress(framesObj);
-		calculatePerceptualProgress(framesObj);
-		return calculateValues(framesObj);
+	return frame.extractFramesFromTimeline(timeline).then(function (data) {
+		const frames = data.frames;
+		calculateVisualProgress(frames);
+		calculatePerceptualProgress(frames);
+		return calculateValues(frames, data);
 	});
 };
