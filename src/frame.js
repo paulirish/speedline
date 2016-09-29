@@ -90,7 +90,7 @@ function extractFramesFromTimeline(timeline) {
 	});
 
 	if (frames.length === 0) {
-		Promise.reject(new Error('No screenshots found in trace'));
+		return Promise.reject(new Error('No screenshots found in trace'));
 	}
 	// add white frame to beginning of trace
 	const fakeWhiteFrame = frame(synthesizeWhiteFrame(frames), startTs);
