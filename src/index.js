@@ -6,8 +6,8 @@ const speedIndex = require('./speed-index');
 function calculateValues(frames, data) {
 	const indexes = speedIndex.calculateSpeedIndexes(frames, data);
 	const duration = Math.floor(data.endTs - data.startTs);
-	const first = Math.floor(indexes.first - data.startTs);
-	const complete = Math.floor(indexes.complete - data.startTs);
+	const first = Math.floor(indexes.firstPaintTs - data.startTs);
+	const complete = Math.floor(indexes.visuallyCompleteTs - data.startTs);
 
 	return {
 		beginning: data.startTs,

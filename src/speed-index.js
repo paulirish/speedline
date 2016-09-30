@@ -124,8 +124,8 @@ function calculateSpeedIndexes(frames, data) {
 	});
 
 	return {
-		first: firstPaintTs,
-		complete: visuallyCompleteTs,
+		firstPaintTs,
+		visuallyCompleteTs,
 		speedIndex,
 		perceptualSpeedIndex
 	};
