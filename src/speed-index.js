@@ -115,7 +115,7 @@ function calculateSpeedIndexes(frames, data) {
 
 	frames.forEach(function (frame) {
 		// skip frames from 0 to fP
-		if (frame.getTimeStamp() >= firstPaintTs) {
+		if (frame.getTimeStamp() > firstPaintTs) {
 			const elapsed = frame.getTimeStamp() - prevFrameTs;
 			speedIndex += elapsed * (1 - prevProgress);
 			perceptualSpeedIndex += elapsed * (1 - prevPerceptualProgress);

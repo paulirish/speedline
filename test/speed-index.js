@@ -51,8 +51,8 @@ test('speed index calculate the right value', async t => {
 	]);
 
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
-	t.is(indexes.speedIndex, 2000);
-	t.is(indexes.perceptualSpeedIndex, 2000);
+	t.is(indexes.speedIndex, 1000);
+	t.is(indexes.perceptualSpeedIndex, 1000);
 });
 
 test('speed indexes calculated for trace w/ 1 frame @ 4242ms', async t => {
@@ -60,8 +60,8 @@ test('speed indexes calculated for trace w/ 1 frame @ 4242ms', async t => {
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
-	t.is(Math.floor(indexes.speedIndex), 8484);
-	t.is(Math.floor(indexes.perceptualSpeedIndex), 8484);
+	t.is(Math.floor(indexes.speedIndex), 4242);
+	t.is(Math.floor(indexes.perceptualSpeedIndex), 4242);
 });
 
 test('speed indexes calculated for 2 frame (blank @1s, content @ 2s) trace', async t => {
@@ -69,8 +69,8 @@ test('speed indexes calculated for 2 frame (blank @1s, content @ 2s) trace', asy
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
-	t.is(Math.floor(indexes.speedIndex), 2980);
-	t.is(Math.floor(indexes.perceptualSpeedIndex), 2805);
+	t.is(Math.floor(indexes.speedIndex), 1980);
+	t.is(Math.floor(indexes.perceptualSpeedIndex), 2000);
 });
 
 test('speed indexes calculated for 2 frame (content @1s, more content @2s) trace', async t => {
@@ -78,8 +78,8 @@ test('speed indexes calculated for 2 frame (content @1s, more content @2s) trace
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
-	t.is(Math.floor(indexes.speedIndex), 2040);
-	t.is(Math.floor(indexes.perceptualSpeedIndex), 2066);
+	t.is(Math.floor(indexes.speedIndex), 1040);
+	t.is(Math.floor(indexes.perceptualSpeedIndex), 1066);
 });
 
 test('speed indexes calculated for 3 frame (blank @1s, content @2s, more content @3s) trace', async t => {
@@ -87,7 +87,7 @@ test('speed indexes calculated for 3 frame (blank @1s, content @2s, more content
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
-	t.is(Math.floor(indexes.speedIndex), 3040);
-	t.is(Math.floor(indexes.perceptualSpeedIndex), 3066);
+	t.is(Math.floor(indexes.speedIndex), 2040);
+	t.is(Math.floor(indexes.perceptualSpeedIndex), 2066);
 });
 
