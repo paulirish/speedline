@@ -62,6 +62,8 @@ speedline('./timeline').then(results => {
 
 * (string | object[]) `timeline`
 * returns (Promise) resolving with an object containing:
+  * `beginning` (number) - Recording start timestamp    
+  * `end` (number) - Recording end timestamp
   * `speedIndex` (number) - speed index value.
   * `perceptualSpeedIndex` (number) - perceptual speed index value.
   * `first` (number) - duration before the first visual change in ms.
