@@ -6,24 +6,33 @@ var meow = require('meow');
 var babar = require('babar');
 var loudRejection = require('loud-rejection');
 
-var speedIndex = require('./lib');
+var speedIndex = require('.');
 
 const OUTPUT_GREEN = '\x1b[32m';
 const OUTPUT_BOLD = '\x1b[1m';
 const OUTPUT_RESET = '\x1b[22m\x1b[39m';
 
 function display(res) {
-	const startTs = res.frames[0].getTimeStamp();
+	const startTs = res.beginning;
 	const visualProgress = res.frames.map(frame => {
 		const ts = Math.floor(frame.getTimeStamp() - startTs);
 		return `${ts}=${Math.floor(frame.getProgress())}%`;
 	}).join(', ');
 
+	const visualPreceptualProgress = res.frames.map(frame => {
+		const ts = Math.floor(frame.getTimeStamp() - startTs);
+		return `${ts}=${Math.floor(frame.getPerceptualProgress())}%`;
+	}).join(', ');
+
 	const log = [
 		`First Visual Change: ${res.first}`,
 		`Visually Complete: ${res.complete}`,
-		`Speed Index: ${res.speedIndex}`,
-		`Visual Progress: ${visualProgress}`
+		'',
+		`Speed Index: ${res.speedIndex.toFixed(1)}`,
+		`Visual Progress: ${visualProgress}`,
+		'',
+		`Perceptual Speed Index: ${res.perceptualSpeedIndex.toFixed(1)}`,
+		`Perceptual Visual Progress: ${visualPreceptualProgress}`
 	].join(`\n`);
 	console.log(log);
 }
@@ -33,11 +42,11 @@ function displayPretty(res) {
 	const bold = (content) => OUTPUT_BOLD + content + OUTPUT_RESET;
 
 	console.log([
-		`${bold('Recording duration')}: ${green(res.duration + ' ms')}`,
+		`${bold('Recording duration')}: ${green(res.duration + ' ms')}  (${res.frames.length} frames found)`,
 		`${bold('First visual change')}: ${green(res.first + ' ms')}`,
 		`${bold('Last visual change')}: ${green(res.complete + ' ms')}`,
-		`${bold('Speed Index')}: ${green(res.speedIndex)}`,
-		`${bold('Perceptual Speed Index')}: ${green(res.perceptualSpeedIndex)}`,
+		`${bold('Speed Index')}: ${green(res.speedIndex.toFixed(1))}`,
+		`${bold('Perceptual Speed Index')}: ${green(res.perceptualSpeedIndex.toFixed(1))}`,
 		'',
 		`${bold('Histogram visual progress:')}`
 	].join('\n'));
@@ -88,4 +97,6 @@ speedIndex(filePath).then(function (res) {
 	}
 
 	display(res);
-});
+}).catch(err => {
+	handleError(err);
+ });

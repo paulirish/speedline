@@ -1,6 +1,6 @@
 import fs from 'fs';
 import test from 'ava';
-import frame from '../lib/frame';
+import frame from '../src/frame';
 
 const DEFAULT_IMAGE = fs.readFileSync('./assets/Solid_black.jpg');
 const DEFAULT_TS = new Date().getTime();
@@ -35,13 +35,15 @@ test('frames can set and retrieve progress', t => {
 	t.is(f.getProgress(), PROGRESS);
 });
 
-test('extract frames from timeline should returns an array of frames', async t => {
-	const frames = await frame.extractFramesFromTimeline('./assets/nyt.json');
-	t.true(Array.isArray(frames), 'Frames is not an array');
+test('extract frames from timeline should return a data object with an array of frames', async t => {
+	const data = await frame.extractFramesFromTimeline('./assets/nyt.json');
+	t.truthy(data.startTs, 'data.startTs doesn\'t exist');
+	t.truthy(data.endTs, 'data.endTs doesn\'t exist');
+	t.true(Array.isArray(data.frames), 'Frames is not an array');
 });
 
 test('extract frames should support json', async t => {
 	const trace = JSON.parse(fs.readFileSync('./assets/progressive-app.json', 'utf-8'));
-	const frames = await frame.extractFramesFromTimeline(trace);
-	t.true(Array.isArray(frames), 'Frames is not an array');
+	const data = await frame.extractFramesFromTimeline(trace);
+	t.true(Array.isArray(data.frames), 'Frames is not an array');
 });

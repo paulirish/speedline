@@ -1,40 +1,23 @@
 'use strict';
 
-import frame from './frame';
-import {
-	calculateVisualProgress,
-	calculateSpeedIndexes,
-	calculatePerceptualProgress
-} from './speed-index';
+const frame = require('./frame');
+const speedIndex = require('./speed-index');
 
-function calculateValues(frames) {
-	const startTs = frames[0].getTimeStamp();
-	const endTs = frames[frames.length - 1].getTimeStamp();
-	const duration = Math.floor(endTs - startTs);
-
-	let complete;
-	for (let i = 0; i < frames.length && !complete; i++) {
-		if (frames[i].getProgress() >= 100) {
-			complete = Math.floor(frames[i].getTimeStamp() - startTs);
-		}
-	}
-
-	let first;
-	for (let i = 0; i < frames.length && !first; i++) {
-		if (frames[i].getProgress() > 0) {
-			first = Math.floor(frames[i].getTimeStamp() - startTs);
-		}
-	}
-
-	const {speedIndex, perceptualSpeedIndex} = calculateSpeedIndexes(frames);
+function calculateValues(frames, data) {
+	const indexes = speedIndex.calculateSpeedIndexes(frames, data);
+	const duration = Math.floor(data.endTs - data.startTs);
+	const first = Math.floor(indexes.firstPaintTs - data.startTs);
+	const complete = Math.floor(indexes.visuallyCompleteTs - data.startTs);
 
 	return {
+		beginning: data.startTs,
+		end: data.endTs,
 		frames,
 		first,
 		complete,
 		duration,
-		speedIndex,
-		perceptualSpeedIndex
+		speedIndex: indexes.speedIndex,
+		perceptualSpeedIndex: indexes.perceptualSpeedIndex
 	};
 }
 
@@ -44,9 +27,10 @@ function calculateValues(frames) {
  * @return {Promise} resolving with an object containing the speed index informations
  */
 module.exports = function (timeline) {
-	return frame.extractFramesFromTimeline(timeline).then(function (frames) {
-		calculateVisualProgress(frames);
-		calculatePerceptualProgress(frames);
-		return calculateValues(frames);
+	return frame.extractFramesFromTimeline(timeline).then(function (data) {
+		const frames = data.frames;
+		speedIndex.calculateVisualProgress(frames);
+		speedIndex.calculatePerceptualProgress(frames);
+		return calculateValues(frames, data);
 	});
 };

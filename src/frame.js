@@ -1,7 +1,7 @@
 'use strict';
 
-import fs from 'fs';
-import jpeg from 'jpeg-js';
+const fs = require('fs');
+const jpeg = require('jpeg-js');
 
 function getPixel(x, y, channel, width, buff) {
 	return buff[(x + y * width) * 4 + channel];
@@ -43,6 +43,28 @@ function convertPixelsToHistogram(img) {
 	return histograms;
 }
 
+function synthesizeWhiteFrame(frames) {
+	const firstImageData = jpeg.decode(frames[0].getImage());
+	const width = firstImageData.width;
+	const height = firstImageData.height;
+
+	const frameData = new Buffer(width * height * 4);
+	let i = 0;
+	while (i < frameData.length) {
+		frameData[i++] = 0xFF; // red
+		frameData[i++] = 0xFF; // green
+		frameData[i++] = 0xFF; // blue
+		frameData[i++] = 0xFF; // alpha - ignored in JPEGs
+	}
+
+	var jpegImageData = jpeg.encode({
+		data: frameData,
+		width: width,
+		height: height
+	});
+	return jpegImageData.data;
+}
+
 const screenshotTraceCategory = 'disabled-by-default-devtools.screenshot';
 function extractFramesFromTimeline(timeline) {
 	let trace;
@@ -55,8 +77,8 @@ function extractFramesFromTimeline(timeline) {
 	let events = trace.traceEvents || trace;
 	events = events.sort((a, b) => a.ts - b.ts).filter(e => e.ts !== 0);
 
-	const start = events[0].ts / 1000;
-	const end = events[events.length - 1].ts / 1000;
+	const startTs = events[0].ts / 1000;
+	const endTs = events[events.length - 1].ts / 1000;
 
 	const rawScreenshots = events.filter(e => e.cat.includes(screenshotTraceCategory));
 	const frames = rawScreenshots.map(function (evt) {
@@ -67,9 +89,19 @@ function extractFramesFromTimeline(timeline) {
 		return frame(imgBuff, timestamp);
 	});
 
-	const firstFrame = frame(frames[0].getImage(), start);
-	const lastFrame = frame(frames[frames.length - 1].getImage(), end);
-	return Promise.resolve([firstFrame, ...frames, lastFrame]);
+	if (frames.length === 0) {
+		return Promise.reject(new Error('No screenshots found in trace'));
+	}
+	// add white frame to beginning of trace
+	const fakeWhiteFrame = frame(synthesizeWhiteFrame(frames), startTs);
+	frames.unshift(fakeWhiteFrame);
+
+	const data = {
+		startTs,
+		endTs,
+		frames: frames
+	};
+	return Promise.resolve(data);
 }
 
 function frame(imgBuff, ts) {
