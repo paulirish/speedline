@@ -55,7 +55,7 @@ test('speed index calculate the right value', async t => {
 	t.is(indexes.perceptualSpeedIndex, 2000);
 });
 
-test('speed indexes calculated for 1 frame traces', async t => {
+test('speed indexes calculated for trace w/ 1 frame @ 4242ms', async t => {
 	const data = await frame.extractFramesFromTimeline('./assets/oneframe-content.json');
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
@@ -64,7 +64,7 @@ test('speed indexes calculated for 1 frame traces', async t => {
 	t.is(Math.floor(indexes.perceptualSpeedIndex), 629);
 });
 
-test('speed indexes calculated for 2 frame (blank, content) traces', async t => {
+test('speed indexes calculated for 2 frame (blank @1s, content @ 2s) trace', async t => {
 	const data = await frame.extractFramesFromTimeline('./assets/twoframes-blank_content.json');
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
@@ -73,7 +73,7 @@ test('speed indexes calculated for 2 frame (blank, content) traces', async t => 
 	t.is(Math.floor(indexes.perceptualSpeedIndex), 3032);
 });
 
-test('speed indexes calculated for 2 frame (content, more content) traces', async t => {
+test('speed indexes calculated for 2 frame (content @1s, more content @2s) trace', async t => {
 	const data = await frame.extractFramesFromTimeline('./assets/twoframes-content_more.json');
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
@@ -82,7 +82,7 @@ test('speed indexes calculated for 2 frame (content, more content) traces', asyn
 	t.is(Math.floor(indexes.perceptualSpeedIndex), 1738);
 });
 
-test('speed indexes calculated for 3 frame (blank, content, more content) traces', async t => {
+test('speed indexes calculated for 3 frame (blank @1s, content @2s, more content @3s) trace', async t => {
 	const data = await frame.extractFramesFromTimeline('./assets/threeframes-blank_content_more.json');
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
