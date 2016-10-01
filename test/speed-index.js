@@ -87,7 +87,7 @@ test('speed indexes calculated for 3 frame (blank @1s, content @2s, more content
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
-	t.is(Math.floor(indexes.speedIndex), 4040);
-	t.is(Math.floor(indexes.perceptualSpeedIndex), 4066);
+	t.is(Math.floor(indexes.speedIndex), 3040);
+	t.is(Math.floor(indexes.perceptualSpeedIndex), 3066);
 });
 
