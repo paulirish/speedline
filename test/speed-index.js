@@ -55,39 +55,39 @@ test('speed index calculate the right value', async t => {
 	t.is(indexes.perceptualSpeedIndex, 2000);
 });
 
-test('speed indexes calculated for 1 frame traces', async t => {
+test('speed indexes calculated for trace w/ 1 frame @ 4242ms', async t => {
 	const data = await frame.extractFramesFromTimeline('./assets/oneframe-content.json');
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
-	t.is(Math.floor(indexes.speedIndex), 629);
-	t.is(Math.floor(indexes.perceptualSpeedIndex), 629);
+	t.is(Math.floor(indexes.speedIndex), 8484);
+	t.is(Math.floor(indexes.perceptualSpeedIndex), 8484);
 });
 
-test('speed indexes calculated for 2 frame (blank, content) traces', async t => {
+test('speed indexes calculated for 2 frame (blank @1s, content @ 2s) trace', async t => {
 	const data = await frame.extractFramesFromTimeline('./assets/twoframes-blank_content.json');
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
-	t.is(Math.floor(indexes.speedIndex), 2986);
-	t.is(Math.floor(indexes.perceptualSpeedIndex), 3032);
+	t.is(Math.floor(indexes.speedIndex), 2980);
+	t.is(Math.floor(indexes.perceptualSpeedIndex), 2805);
 });
 
-test('speed indexes calculated for 2 frame (content, more content) traces', async t => {
+test('speed indexes calculated for 2 frame (content @1s, more content @2s) trace', async t => {
 	const data = await frame.extractFramesFromTimeline('./assets/twoframes-content_more.json');
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
-	t.is(Math.floor(indexes.speedIndex), 1680);
-	t.is(Math.floor(indexes.perceptualSpeedIndex), 1738);
+	t.is(Math.floor(indexes.speedIndex), 2040);
+	t.is(Math.floor(indexes.perceptualSpeedIndex), 2066);
 });
 
-test('speed indexes calculated for 3 frame (blank, content, more content) traces', async t => {
+test('speed indexes calculated for 3 frame (blank @1s, content @2s, more content @3s) trace', async t => {
 	const data = await frame.extractFramesFromTimeline('./assets/threeframes-blank_content_more.json');
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
-	t.is(Math.floor(indexes.speedIndex), 1680);
-	t.is(Math.floor(indexes.perceptualSpeedIndex), 1738);
+	t.is(Math.floor(indexes.speedIndex), 4040);
+	t.is(Math.floor(indexes.perceptualSpeedIndex), 4066);
 });
 

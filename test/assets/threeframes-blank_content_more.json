@@ -3,7 +3,7 @@
 			{
 				"pid": 93449,
 				"tid": 1295,
-				"ts": 960431276975,
+				"ts": 900000000000,
 				"ph": "X",
 				"cat": "toplevel",
 				"name": "MessageLoop::RunTask",
@@ -18,7 +18,7 @@
 			{
 				"pid": 93267,
 				"tid": 1295,
-				"ts": 960431336333,
+				"ts": 900001000000,
 				"ph": "O",
 				"cat": "disabled-by-default-devtools.screenshot",
 				"name": "Screenshot",
@@ -31,7 +31,7 @@
 			{
 				"pid": 93267,
 				"tid": 1295,
-				"ts": 960432073662,
+				"ts": 900002000000,
 				"ph": "O",
 				"cat": "disabled-by-default-devtools.screenshot",
 				"name": "Screenshot",
@@ -44,7 +44,7 @@
 			{
 				"pid": 93267,
 				"tid": 1295,
-				"ts": 960434262134,
+				"ts": 900003000000,
 				"ph": "O",
 				"cat": "disabled-by-default-devtools.screenshot",
 				"name": "Screenshot",
@@ -57,7 +57,7 @@
 			{
 				"pid": 93267,
 				"tid": 1295,
-				"ts": 960434762288,
+				"ts": 900004000000,
 				"ph": "X",
 				"cat": "toplevel",
 				"name": "MessageLoop::RunTask",
