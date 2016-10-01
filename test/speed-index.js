@@ -92,33 +92,30 @@ test('speed indexes calculated for 3 frame (blank @1s, content @2s, more content
 });
 
 test('speed index starts summing from first paint', async t => {
-
 	const mockData = getMockProgessFrames();
 	/**
 	 *  We've generated frames with this visual progress curve (0, 0, 25, 75, 100)
 	 *
 	 *      ___________________________________________________
-	 *  100 |░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░████████
-	 *   75 |░░░░░░░░░░░░░░░░░░░░░░░░▄▄▄▄▄▄▄████████
-	 *   50 |░░░░░░░░░░░░░░░░░░░░░░░░███████████████
-	 *   25 |░░░░░░░░░░░░░░░░▄▄▄▄▄▄▄▄███████████████
-	 *    0 |░░░░░░░░░░░░░░░░███████████████████████
+	 *  100 |░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░██████████
+	 *   75 |░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▄▄▄▄▄▄▄▄▄▄██████████
+	 *   50 |░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░████████████████████
+	 *   25 |░░░░░░░░░░░░░░░░░░░░▄▄▄▄▄▄▄▄▄▄████████████████████
+	 *    0 |░░░░░░░░░░░░░░░░░░░░██████████████████████████████
 	 *      ----------|----------|---------|---------|---------
 	 *      0         1000      2000      3000      4000
 	 *
-	 *	Speed Index is the area above the curve. Second by second:
-	 *         1000    +  1000   +   750  +   250   +    0
+	 *	Speed Index is the area above the curve (goo.gl/0YZ7TP). Second by second:
+	 *          1000    +  1000   +   750  +   250   +   0
 	 *  Our total sum, and thus our Speed Index, is 3000.
 	 */
 
 	const indexes = speedIndex.calculateSpeedIndexes(mockData.frames, mockData.data);
-
 	t.is(Math.floor(indexes.speedIndex), 3000);
 	t.is(Math.floor(indexes.perceptualSpeedIndex), 3000);
 });
 
 function getMockProgessFrames() {
-
 	// first two frames show no movement
 	const f0 = frame.create(null, 0);
 	const f1 = frame.create(null, 1000);
@@ -140,9 +137,9 @@ function getMockProgessFrames() {
 	f4.setProgress(100);
 
 	const frames = [f0, f1, f2, f3, f4];
-	const data = { startTs: 0 };
+	const data = {startTs: 0};
 	return {
 		frames,
 		data
-	}
+	};
 }
