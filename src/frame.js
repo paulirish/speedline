@@ -108,6 +108,7 @@ function frame(imgBuff, ts) {
 	let _histogram = null;
 	let _progress = null;
 	let _perceptualProgress = null;
+	let _parsedImage = null;
 
 	return {
 		getHistogram: function () {
@@ -115,7 +116,7 @@ function frame(imgBuff, ts) {
 				return _histogram;
 			}
 
-			const pixels = jpeg.decode(imgBuff);
+			const pixels = this.getParsedImage();
 			_histogram = convertPixelsToHistogram(pixels);
 			return _histogram;
 		},
@@ -137,7 +138,10 @@ function frame(imgBuff, ts) {
 		},
 
 		getParsedImage: function () {
-			return jpeg.decode(imgBuff);
+			if (!_parsedImage) {
+				_parsedImage = jpeg.decode(imgBuff);
+			}
+			return _parsedImage;
 		},
 
 		getProgress: function () {
