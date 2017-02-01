@@ -24,10 +24,11 @@ function calculateValues(frames, data) {
 /**
  * Retrieve speed index informations
  * @param  {string|Array|DevtoolsTimelineModel} timeline
+ * @param  {?Object} opts
  * @return {Promise} resolving with an object containing the speed index informations
  */
-module.exports = function (timeline) {
-	return frame.extractFramesFromTimeline(timeline).then(function (data) {
+module.exports = function (timeline, opts) {
+	return frame.extractFramesFromTimeline(timeline, opts).then(function (data) {
 		const frames = data.frames;
 		speedIndex.calculateVisualProgress(frames);
 		speedIndex.calculatePerceptualProgress(frames);
