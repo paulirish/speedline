@@ -58,9 +58,10 @@ speedline('./timeline').then(results => {
 
 ### API
 
-#### `speedline(timeline)`
+#### `speedline(timeline [, opts])`
 
 * (string | object[]) `timeline`
+* (object) `opts`
 * returns (Promise) resolving with an object containing:
   * `beginning` (number) - Recording start timestamp    
   * `end` (number) - Recording end timestamp
@@ -74,6 +75,10 @@ speedline('./timeline').then(results => {
 If the type of the timeline parameter is:
 * `string` - the parameter represents the location of the of file containing the timeline.
 * `array` - the parameter represents the traceEvents content of the timeline file.
+
+`opts`
+* `timeOrigin`: Provides the baseline timeStamp, typically navigationStart. Must be a monotonic clock timestamp that matches the trace.  E.g. `speedline('trace.json', {timeOrigin: 103205446186})`
+
 
 #### `Frame`
 

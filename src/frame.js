@@ -66,7 +66,8 @@ function synthesizeWhiteFrame(frames) {
 }
 
 const screenshotTraceCategory = 'disabled-by-default-devtools.screenshot';
-function extractFramesFromTimeline(timeline) {
+function extractFramesFromTimeline(timeline, opts) {
+	opts = opts || {};
 	let trace;
 	trace = typeof timeline === 'string' ? fs.readFileSync(timeline, 'utf-8') : timeline;
 	try {
@@ -77,7 +78,7 @@ function extractFramesFromTimeline(timeline) {
 	let events = trace.traceEvents || trace;
 	events = events.sort((a, b) => a.ts - b.ts).filter(e => e.ts !== 0);
 
-	const startTs = events[0].ts / 1000;
+	const startTs = (opts.timeOrigin || events[0].ts) / 1000;
 	const endTs = events[events.length - 1].ts / 1000;
 
 	const rawScreenshots = events.filter(e => e.cat.includes(screenshotTraceCategory));
