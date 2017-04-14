@@ -44,6 +44,30 @@ test('visual progress should have 0 and 100 for different images', async t => {
 	t.is(data.frames[1].getProgress(), 100);
 });
 
+test('perceptual progress should use SSIM', async t => {
+	const data = calculateVisualProgressFromImages([
+		'./assets/frameWhite.jpg',
+		'./assets/frameA.jpg',
+		'./assets/frameB.jpg',
+		'./assets/frameC.jpg'
+	]);
+
+	speedIndex.calculatePerceptualProgress(data.frames);
+
+	const visualProgress = data.frames.map(frame => Math.floor(frame.getProgress()));
+	const perceptualProgress = data.frames.map(frame => Math.floor(frame.getPerceptualProgress()));
+
+	t.is(perceptualProgress[0], 0);
+	t.is(perceptualProgress[1], 59);
+	t.is(perceptualProgress[2], 69);
+	t.is(perceptualProgress[3], 100);
+
+	// perceptual progress should respond well to early in-place structure
+	t.true(visualProgress[1] < perceptualProgress[1]);
+	// perceptual progress should be less influenced by color-only changes
+	t.true(visualProgress[2] - visualProgress[1] > perceptualProgress[2] - perceptualProgress[1]);
+});
+
 test('speed index calculate the right value', async t => {
 	const data = calculateVisualProgressFromImages([
 		'./assets/Solid_black.jpg',
@@ -79,7 +103,7 @@ test('speed indexes calculated for 2 frame (content @1s, more content @2s) trace
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
 	t.is(Math.floor(indexes.speedIndex), 1040);
-	t.is(Math.floor(indexes.perceptualSpeedIndex), 1066);
+	t.is(Math.floor(indexes.perceptualSpeedIndex), 1030);
 });
 
 test('speed indexes calculated for 3 frame (blank @1s, content @2s, more content @3s) trace', async t => {
@@ -88,7 +112,16 @@ test('speed indexes calculated for 3 frame (blank @1s, content @2s, more content
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
 	t.is(Math.floor(indexes.speedIndex), 2040);
-	t.is(Math.floor(indexes.perceptualSpeedIndex), 2066);
+	t.is(Math.floor(indexes.perceptualSpeedIndex), 2030);
+});
+
+test('speed indexes calculated for realistic trace', async t => {
+	const data = await frame.extractFramesFromTimeline('./assets/progressive-app-updated.json');
+	speedIndex.calculateVisualProgress(data.frames);
+	speedIndex.calculatePerceptualProgress(data.frames);
+	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
+	t.is(Math.floor(indexes.speedIndex), 537);
+	t.is(Math.floor(indexes.perceptualSpeedIndex), 578);
 });
 
 test('speed index starts summing from first paint', async t => {
