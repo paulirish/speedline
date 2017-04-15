@@ -137,6 +137,7 @@ function calculateSpeedIndexes(frames, data) {
 }
 
 module.exports = {
+	calculateFrameSimilarity,
 	calculateVisualProgress,
 	calculatePerceptualProgress,
 	calculateSpeedIndexes

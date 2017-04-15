@@ -18,6 +18,16 @@ function calculateVisualProgressFromImages(images = [], delay = 1000) {
 	};
 }
 
+test('frame similarity should reflect SSIM', async t => {
+	const data = calculateVisualProgressFromImages([
+		'./assets/frameA.jpg',
+		'./assets/frameC.jpg'
+	]);
+
+	const similarity = speedIndex.calculateFrameSimilarity(data.frames[0], data.frames[1]);
+	t.is(Math.floor(similarity * 100), 78);
+});
+
 test('visual progress should be 100 if there is a single frame only', async t => {
 	const data = calculateVisualProgressFromImages(['./assets/grayscale.jpg']);
 	t.is(data.frames[0].getProgress(), 100);
@@ -116,7 +126,7 @@ test('speed indexes calculated for 3 frame (blank @1s, content @2s, more content
 });
 
 test('speed indexes calculated for realistic trace', async t => {
-	const data = await frame.extractFramesFromTimeline('./assets/progressive-app-updated.json');
+	const data = await frame.extractFramesFromTimeline('./assets/progressive-app-m59.json');
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
