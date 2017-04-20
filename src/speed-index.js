@@ -47,7 +47,9 @@ function calculateVisualProgress(frames) {
 
 function calculateFrameSimilarity(frame, target) {
 	const defaultImageConfig = {
-		channels: 3
+		// image-ssim uses this to interpret the arraybuffer NOT the desired channels to consider
+		// jpeg-js encodes each pixel with an alpha channel set to 0xFF, so 4 channel interpretation is required
+		channels: 4
 	};
 
 	const frameData = Object.assign(frame.getParsedImage(), defaultImageConfig);
@@ -135,6 +137,7 @@ function calculateSpeedIndexes(frames, data) {
 }
 
 module.exports = {
+	calculateFrameSimilarity,
 	calculateVisualProgress,
 	calculatePerceptualProgress,
 	calculateSpeedIndexes
