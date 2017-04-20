@@ -26,6 +26,8 @@ test('frame similarity should reflect SSIM', async t => {
 
 	const similarity = speedIndex.calculateFrameSimilarity(data.frames[0], data.frames[1]);
 	t.is(Math.floor(similarity * 100), 78);
+	// You should be able to reproduce this result (78) on http://darosh.github.io/image-ssim-js/test/browser_test.html
+	// However, you'll need some hacks: https://github.com/pmdartus/speedline/pull/42/files#r112545467
 });
 
 test('visual progress should be 100 if there is a single frame only', async t => {
