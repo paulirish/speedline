@@ -47,11 +47,13 @@ test('extract frames should support json', async t => {
 	const data = await frame.extractFramesFromTimeline(trace);
 	t.is(data.startTs, 103204916.772, 'data.startTs doesn\'t match expected value');
 	t.true(Array.isArray(data.frames), 'Frames is not an array');
+	t.is(data.frames.length, 7, 'Number of frames is incorrect');
 });
 
 test('extract frames from timeline supports options', async t => {
-	const data = await frame.extractFramesFromTimeline('./assets/progressive-app.json', {timeOrigin: 103205446186});
-	t.is(data.startTs, 103205446.186, 'data.startTs doesn\'t match supplied timeOrigin value');
+	const data = await frame.extractFramesFromTimeline('./assets/progressive-app.json', {timeOrigin: 103206183179});
+	t.is(data.startTs, 103206183.179, 'data.startTs doesn\'t match supplied timeOrigin value');
 	t.truthy(data.endTs, 'data.endTs doesn\'t exist');
 	t.true(Array.isArray(data.frames), 'Frames is not an array');
+	t.is(data.frames.length, 4, 'Frames were not filtered');
 });
