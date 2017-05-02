@@ -81,7 +81,7 @@ function extractFramesFromTimeline(timeline, opts) {
 	const startTs = (opts.timeOrigin || events[0].ts) / 1000;
 	const endTs = events[events.length - 1].ts / 1000;
 
-	const rawScreenshots = events.filter(e => e.cat.includes(screenshotTraceCategory));
+	const rawScreenshots = events.filter(e => e.cat.includes(screenshotTraceCategory) && e.ts >= startTs * 1000);
 	const frames = rawScreenshots.map(function (evt) {
 		const base64img = evt.args && evt.args.snapshot;
 		const timestamp = evt.ts / 1000;
