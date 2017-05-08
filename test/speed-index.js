@@ -136,6 +136,15 @@ test('speed indexes calculated for realistic trace', async t => {
 	t.is(Math.floor(indexes.perceptualSpeedIndex), 578);
 });
 
+test('speed indexes calculated for realistic trace with --fast', async t => {
+	const data = await frame.extractFramesFromTimeline('./assets/progressive-app-m59.json');
+	speedIndex.calculateVisualProgress(data.frames, {fast: true});
+	speedIndex.calculatePerceptualProgress(data.frames, {fast: true});
+	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
+	t.is(Math.floor(indexes.speedIndex), 537);
+	t.is(Math.floor(indexes.perceptualSpeedIndex), 578);
+});
+
 test('speed index starts summing from first paint', async t => {
 	const mockData = getMockProgessFrames();
 	/**

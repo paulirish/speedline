@@ -30,8 +30,8 @@ function calculateValues(frames, data) {
 module.exports = function (timeline, opts) {
 	return frame.extractFramesFromTimeline(timeline, opts).then(function (data) {
 		const frames = data.frames;
-		speedIndex.calculateVisualProgress(frames);
-		speedIndex.calculatePerceptualProgress(frames);
+		speedIndex.calculateVisualProgress(frames, opts);
+		speedIndex.calculatePerceptualProgress(frames, opts);
 		return calculateValues(frames, data);
 	});
 };

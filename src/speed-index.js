@@ -33,14 +33,44 @@ function calculateFrameProgress(current, initial, target) {
 	return progress;
 }
 
-function calculateVisualProgress(frames) {
+function calculateProgressBetweenFrames(frames, lowerBound, upperBound, threshold, getProgress, setProgress) {
+	if (threshold === 0) {
+		frames.forEach(frame => setProgress(frame, getProgress(frame)));
+		return;
+	}
+
+	const lowerFrame = frames[lowerBound];
+	const upperFrame = frames[upperBound];
+
+	const lowerProgress = getProgress(lowerFrame);
+	const upperProgress = getProgress(upperFrame);
+
+	setProgress(lowerFrame, lowerProgress);
+	setProgress(upperFrame, upperProgress);
+
+	if (Math.abs(lowerProgress - upperProgress) < threshold) {
+		for (let i = lowerBound; i < upperBound; i++) {
+			setProgress(frames[i], lowerProgress);
+		}
+	} else if (upperBound - lowerBound > 1) {
+		const midpoint = Math.floor((lowerBound + upperBound) / 2);
+		calculateProgressBetweenFrames(frames, lowerBound, midpoint, threshold, getProgress, setProgress);
+		calculateProgressBetweenFrames(frames, midpoint, upperBound, threshold, getProgress, setProgress);
+	}
+}
+
+function calculateVisualProgress(frames, opts) {
 	const initial = frames[0];
 	const target = frames[frames.length - 1];
 
-	frames.forEach(function (frame) {
-		const progress = calculateFrameProgress(frame, initial, target);
-		frame.setProgress(progress);
-	});
+	calculateProgressBetweenFrames(
+		frames,
+		0,
+		frames.length - 1,
+		opts && opts.fast ? 5 : 0,
+		frame => frame.getProgress() || calculateFrameProgress(frame, initial, target),
+		(frame, progress) => frame.setProgress(progress)
+	);
 
 	return frames;
 }
@@ -59,30 +89,26 @@ function calculateFrameSimilarity(frame, target) {
 	return diff.ssim;
 }
 
-function calculatePerceptualProgress(frames) {
+function calculatePerceptualProgress(frames, opts) {
+	const initial = frames[0];
 	const target = frames[frames.length - 1];
+	const initialSimilarity = calculateFrameSimilarity(initial, target);
 
-	// Calculate frames simliarity between each frames and the final
-	const framesSimilarity = frames
-		.map(frame => calculateFrameSimilarity(frame, target));
-
-	// Get the min frame similarity value
-	const minPreceptualProgress = framesSimilarity
-		.reduce((min, progress) => Math.min(min, progress), Infinity);
-
-	// Remap the values from [minPreceptualProgress, 1], to [0, 100] interval
-	// to be consistent with the standard visual progress
-	const normalizedSimilarity = framesSimilarity
-		.map(progress => {
-			if (progress === minPreceptualProgress) { // Images are the same
-				return 0;
+	calculateProgressBetweenFrames(
+		frames,
+		0,
+		frames.length - 1,
+		opts && opts.fast ? 5 : 0,
+		frame => {
+			if (frame.getPerceptualProgress()) {
+				return frame.getPerceptualProgress();
 			}
-			const oldRange = 1 - minPreceptualProgress;
-			return ((progress - minPreceptualProgress) * 100) / oldRange;
-		});
 
-	normalizedSimilarity
-		.forEach((progress, index) => frames[index].setPerceptualProgress(progress));
+			const ssim = calculateFrameSimilarity(frame, target);
+			return Math.max(100 * (ssim - initialSimilarity) / (1 - initialSimilarity), 0);
+		},
+		(frame, progress) => frame.setPerceptualProgress(progress)
+	);
 
 	return frames;
 }
