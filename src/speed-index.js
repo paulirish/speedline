@@ -2,6 +2,7 @@
 
 const imageSSIM = require('image-ssim');
 
+/* BEGIN FAST MODE CONSTANTS - See function doc for explanation */
 const FAST_MODE_ALLOWABLE_CHANGE_MAX = 5;
 const FAST_MODE_ALLOWABLE_CHANGE_MEDIAN = 3;
 const FAST_MODE_ALLOWABLE_CHANGE_MIN = 1;
@@ -9,7 +10,17 @@ const FAST_MODE_ALLOWABLE_CHANGE_MIN = 1;
 const FAST_MODE_CONSTANT = FAST_MODE_ALLOWABLE_CHANGE_MIN;
 const FAST_MODE_MULTIPLIER = FAST_MODE_ALLOWABLE_CHANGE_MAX - FAST_MODE_CONSTANT;
 const FAST_MODE_EXPONENTIATION_COEFFICIENT = Math.log((FAST_MODE_ALLOWABLE_CHANGE_MEDIAN - FAST_MODE_CONSTANT) / FAST_MODE_MULTIPLIER);
+/* END FAST MODE CONSTANTS - See function doc for explanation */
 
+/**
+ * This computes the allowed percentage of change between two frames in fast mode where we won't examine the frames in between them.
+ * It follows an exponential function such that:
+ *  - We allow up to FAST_MODE_ALLOWABLE_CHANGE_MAX percent difference when the frames are ~0s apart.
+ *  - We allow up to FAST_MODE_ALLOWABLE_CHANGE_MEDIAN percent difference when the frames are ~1s apart.
+ *  - We allow up to FAST_MODE_ALLOWABLE_CHANGE_MIN percent difference when the frames are very far apart.
+ *
+ *  f(t) = FAST_MODE_MULTIPLIER * e^(FAST_MODE_EXPONENTIATION_COEFFICIENT * t) + FAST_MODE_CONSTANT
+ */
 function calculateFastModeAllowableChange(elapsedTime) {
 	const elapsedTimeInSeconds = elapsedTime / 1000;
 	const allowableChange = FAST_MODE_MULTIPLIER * Math.exp(FAST_MODE_EXPONENTIATION_COEFFICIENT * elapsedTimeInSeconds) + FAST_MODE_CONSTANT;
