@@ -2,6 +2,20 @@
 
 const imageSSIM = require('image-ssim');
 
+const FAST_MODE_ALLOWABLE_CHANGE_MAX = 5;
+const FAST_MODE_ALLOWABLE_CHANGE_MEDIAN = 3;
+const FAST_MODE_ALLOWABLE_CHANGE_MIN = 1;
+
+const FAST_MODE_CONSTANT = FAST_MODE_ALLOWABLE_CHANGE_MIN;
+const FAST_MODE_MULTIPLIER = FAST_MODE_ALLOWABLE_CHANGE_MAX - FAST_MODE_CONSTANT;
+const FAST_MODE_EXPONENTIATION_COEFFICIENT = Math.log((FAST_MODE_ALLOWABLE_CHANGE_MEDIAN - FAST_MODE_CONSTANT) / FAST_MODE_MULTIPLIER);
+
+function calculateFastModeAllowableChange(elapsedTime) {
+	const elapsedTimeInSeconds = elapsedTime / 1000;
+	const allowableChange = FAST_MODE_MULTIPLIER * Math.exp(FAST_MODE_EXPONENTIATION_COEFFICIENT * elapsedTimeInSeconds) + FAST_MODE_CONSTANT;
+	return allowableChange;
+}
+
 function calculateFrameProgress(current, initial, target) {
 	let total = 0;
 	let match = 0;
@@ -33,29 +47,30 @@ function calculateFrameProgress(current, initial, target) {
 	return progress;
 }
 
-function calculateProgressBetweenFrames(frames, lowerBound, upperBound, threshold, getProgress, setProgress) {
-	if (threshold === 0) {
-		frames.forEach(frame => setProgress(frame, getProgress(frame)));
+function calculateProgressBetweenFrames(frames, lowerBound, upperBound, isFast, getProgress, setProgress) {
+	if (!isFast) {
+		frames.forEach(frame => setProgress(frame, getProgress(frame), false));
 		return;
 	}
 
 	const lowerFrame = frames[lowerBound];
 	const upperFrame = frames[upperBound];
+	const elapsedTime = upperFrame.getTimeStamp() - lowerFrame.getTimeStamp();
 
 	const lowerProgress = getProgress(lowerFrame);
 	const upperProgress = getProgress(upperFrame);
 
-	setProgress(lowerFrame, lowerProgress);
-	setProgress(upperFrame, upperProgress);
+	setProgress(lowerFrame, lowerProgress, false);
+	setProgress(upperFrame, upperProgress, false);
 
-	if (Math.abs(lowerProgress - upperProgress) < threshold) {
-		for (let i = lowerBound; i < upperBound; i++) {
-			setProgress(frames[i], lowerProgress);
+	if (Math.abs(lowerProgress - upperProgress) < calculateFastModeAllowableChange(elapsedTime)) {
+		for (let i = lowerBound + 1; i < upperBound; i++) {
+			setProgress(frames[i], lowerProgress, true);
 		}
 	} else if (upperBound - lowerBound > 1) {
 		const midpoint = Math.floor((lowerBound + upperBound) / 2);
-		calculateProgressBetweenFrames(frames, lowerBound, midpoint, threshold, getProgress, setProgress);
-		calculateProgressBetweenFrames(frames, midpoint, upperBound, threshold, getProgress, setProgress);
+		calculateProgressBetweenFrames(frames, lowerBound, midpoint, isFast, getProgress, setProgress);
+		calculateProgressBetweenFrames(frames, midpoint, upperBound, isFast, getProgress, setProgress);
 	}
 }
 
@@ -63,13 +78,25 @@ function calculateVisualProgress(frames, opts) {
 	const initial = frames[0];
 	const target = frames[frames.length - 1];
 
+	function getProgress(frame) {
+		if (typeof frame.getProgress() === 'number') {
+			return frame.getProgress();
+		}
+
+		return calculateFrameProgress(frame, initial, target);
+	}
+
+	function setProgress(frame, progress, isInterpolated) {
+		return frame.setProgress(progress, isInterpolated);
+	}
+
 	calculateProgressBetweenFrames(
 		frames,
 		0,
 		frames.length - 1,
-		opts && opts.fast ? 5 : 0,
-		frame => frame.getProgress() || calculateFrameProgress(frame, initial, target),
-		(frame, progress) => frame.setProgress(progress)
+		opts && opts.fast,
+		getProgress,
+		setProgress
 	);
 
 	return frames;
@@ -94,20 +121,26 @@ function calculatePerceptualProgress(frames, opts) {
 	const target = frames[frames.length - 1];
 	const initialSimilarity = calculateFrameSimilarity(initial, target);
 
+	function getProgress(frame) {
+		if (typeof frame.getPerceptualProgress() === 'number') {
+			return frame.getPerceptualProgress();
+		}
+
+		const ssim = calculateFrameSimilarity(frame, target);
+		return Math.max(100 * (ssim - initialSimilarity) / (1 - initialSimilarity), 0);
+	}
+
+	function setProgress(frame, progress, isInterpolated) {
+		return frame.setPerceptualProgress(progress, isInterpolated);
+	}
+
 	calculateProgressBetweenFrames(
 		frames,
 		0,
 		frames.length - 1,
-		opts && opts.fast ? 5 : 0,
-		frame => {
-			if (frame.getPerceptualProgress()) {
-				return frame.getPerceptualProgress();
-			}
-
-			const ssim = calculateFrameSimilarity(frame, target);
-			return Math.max(100 * (ssim - initialSimilarity) / (1 - initialSimilarity), 0);
-		},
-		(frame, progress) => frame.setPerceptualProgress(progress)
+		opts && opts.fast,
+		getProgress,
+		setProgress
 	);
 
 	return frames;

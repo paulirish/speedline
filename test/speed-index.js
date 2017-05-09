@@ -136,13 +136,22 @@ test('speed indexes calculated for realistic trace', async t => {
 	t.is(Math.floor(indexes.perceptualSpeedIndex), 578);
 });
 
-test('speed indexes calculated for realistic trace with --fast', async t => {
-	const data = await frame.extractFramesFromTimeline('./assets/progressive-app-m59.json');
-	speedIndex.calculateVisualProgress(data.frames, {fast: true});
-	speedIndex.calculatePerceptualProgress(data.frames, {fast: true});
-	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
-	t.is(Math.floor(indexes.speedIndex), 537);
-	t.is(Math.floor(indexes.perceptualSpeedIndex), 578);
+test('speed indexes calculated with --fast', t => {
+	const mockInitialFrame = fs.readFileSync('./assets/frameWhite.jpg');
+	const mockTargetFrame = fs.readFileSync('./assets/frameC.jpg');
+	const mockData = getMockProgressFramesForFast(mockInitialFrame, mockTargetFrame);
+	speedIndex.calculateVisualProgress(mockData.frames, {fast: true});
+	speedIndex.calculatePerceptualProgress(mockData.frames, {fast: true});
+
+	const indexes = speedIndex.calculateSpeedIndexes(mockData.frames, mockData.data);
+	t.is(Math.floor(indexes.speedIndex), 4360);
+	t.is(Math.floor(indexes.perceptualSpeedIndex), 4360);
+
+	// Ensure we skipped computation of most of the 60 fps frames
+	const interpolatedFrames = mockData.frames.filter(frame => frame.isProgressInterpolated());
+	const interpolatedPerceptualFrames = mockData.frames.filter(frame => frame.isPerceptualProgressInterpolated());
+	t.is(interpolatedFrames.length, 107);
+	t.is(interpolatedPerceptualFrames.length, 107);
 });
 
 test('speed index starts summing from first paint', async t => {
@@ -196,4 +205,35 @@ function getMockProgessFrames() {
 		frames,
 		data
 	};
+}
+
+function getMockProgressFramesForFast(initialBuff, targetBuff) {
+	const frames = [];
+
+	// first push 60 fps from 0% -> 3%
+	for (let i = 0; i < 60; i++) {
+		const f = frame.create(initialBuff, 0 + 16 * i);
+		f.setProgress(i * 3 / 60);
+		f.setPerceptualProgress(i * 3 / 60);
+		frames.push(f);
+	}
+
+	// then push 60 fps 50% -> 53%
+	for (let i = 0; i < 60; i++) {
+		const f = frame.create(null, 1000 + 16 * i);
+		f.setProgress(50 + i * 3 / 60);
+		f.setPerceptualProgress(50 + i * 3 / 60);
+		frames.push(f);
+	}
+
+	// then push final major frames 60% -> 100%
+	for (let i = 6; i <= 10; i++) {
+		const f = frame.create(targetBuff, i * 1000);
+		f.setProgress(i * 10);
+		f.setPerceptualProgress(i * 10);
+		frames.push(f);
+	}
+
+	const data = {startTs: 0};
+	return {frames, data};
 }
