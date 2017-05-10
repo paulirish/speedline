@@ -21,7 +21,7 @@ function calculateVisualProgressFromImages(images = [], delay = 1000) {
 test('fast mode allowable change shrinks over time', t => {
 	t.is(speedIndex.calculateFastModeAllowableChange(0), 5);
 	t.is(speedIndex.calculateFastModeAllowableChange(1000), 3);
-	t.ok(speedIndex.calculateFastModeAllowableChange(10000) - 1 < .005);
+	t.true(speedIndex.calculateFastModeAllowableChange(10000) - 1 < 0.005);
 });
 
 test('frame similarity should reflect SSIM', async t => {
