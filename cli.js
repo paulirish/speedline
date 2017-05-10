@@ -97,7 +97,7 @@ if (cli.flags.fast) {
 	console.warn('WARNING: using --fast may result in different metrics due to skipped frames');
 }
 
-speedIndex(filePath, {fast: cli.flags.fast}).then(function (res) {
+speedIndex(filePath, {fastMode: cli.flags.fast}).then(function (res) {
 	if (cli.flags.pretty) {
 		return displayPretty(res);
 	}

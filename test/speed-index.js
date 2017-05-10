@@ -18,6 +18,12 @@ function calculateVisualProgressFromImages(images = [], delay = 1000) {
 	};
 }
 
+test('fast mode allowable change shrinks over time', t => {
+	t.is(speedIndex.calculateFastModeAllowableChange(0), 5);
+	t.is(speedIndex.calculateFastModeAllowableChange(1000), 3);
+	t.ok(speedIndex.calculateFastModeAllowableChange(10000) - 1 < .005);
+});
+
 test('frame similarity should reflect SSIM', async t => {
 	const data = calculateVisualProgressFromImages([
 		'./assets/frameA.jpg',
@@ -140,8 +146,8 @@ test('speed indexes calculated with --fast', t => {
 	const mockInitialFrame = fs.readFileSync('./assets/frameWhite.jpg');
 	const mockTargetFrame = fs.readFileSync('./assets/frameC.jpg');
 	const mockData = getMockProgressFramesForFast(mockInitialFrame, mockTargetFrame);
-	speedIndex.calculateVisualProgress(mockData.frames, {fast: true});
-	speedIndex.calculatePerceptualProgress(mockData.frames, {fast: true});
+	speedIndex.calculateVisualProgress(mockData.frames, {fastMode: true});
+	speedIndex.calculatePerceptualProgress(mockData.frames, {fastMode: true});
 
 	const indexes = speedIndex.calculateSpeedIndexes(mockData.frames, mockData.data);
 	t.is(Math.floor(indexes.speedIndex), 4360);

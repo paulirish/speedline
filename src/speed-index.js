@@ -3,13 +3,13 @@
 const imageSSIM = require('image-ssim');
 
 /* BEGIN FAST MODE CONSTANTS - See function doc for explanation */
-const FAST_MODE_ALLOWABLE_CHANGE_MAX = 5;
-const FAST_MODE_ALLOWABLE_CHANGE_MEDIAN = 3;
-const FAST_MODE_ALLOWABLE_CHANGE_MIN = 1;
+const fastModeAllowableChangeMax = 5;
+const fastModeAllowableChangeMedian = 3;
+const fastModeAllowableChangeMin = 1;
 
-const FAST_MODE_CONSTANT = FAST_MODE_ALLOWABLE_CHANGE_MIN;
-const FAST_MODE_MULTIPLIER = FAST_MODE_ALLOWABLE_CHANGE_MAX - FAST_MODE_CONSTANT;
-const FAST_MODE_EXPONENTIATION_COEFFICIENT = Math.log((FAST_MODE_ALLOWABLE_CHANGE_MEDIAN - FAST_MODE_CONSTANT) / FAST_MODE_MULTIPLIER);
+const fastModeConstant = fastModeAllowableChangeMin;
+const fastModeMultiplier = fastModeAllowableChangeMax - fastModeConstant;
+const fastModeExponentiationCoefficient = Math.log((fastModeAllowableChangeMedian - fastModeConstant) / fastModeMultiplier);
 /* END FAST MODE CONSTANTS - See function doc for explanation */
 
 /**
@@ -23,7 +23,7 @@ const FAST_MODE_EXPONENTIATION_COEFFICIENT = Math.log((FAST_MODE_ALLOWABLE_CHANG
  */
 function calculateFastModeAllowableChange(elapsedTime) {
 	const elapsedTimeInSeconds = elapsedTime / 1000;
-	const allowableChange = FAST_MODE_MULTIPLIER * Math.exp(FAST_MODE_EXPONENTIATION_COEFFICIENT * elapsedTimeInSeconds) + FAST_MODE_CONSTANT;
+	const allowableChange = fastModeMultiplier * Math.exp(fastModeExponentiationCoefficient * elapsedTimeInSeconds) + fastModeConstant;
 	return allowableChange;
 }
 
@@ -58,8 +58,8 @@ function calculateFrameProgress(current, initial, target) {
 	return progress;
 }
 
-function calculateProgressBetweenFrames(frames, lowerBound, upperBound, isFast, getProgress, setProgress) {
-	if (!isFast) {
+function calculateProgressBetweenFrames(frames, lowerBound, upperBound, isFastMode, getProgress, setProgress) {
+	if (!isFastMode) {
 		frames.forEach(frame => setProgress(frame, getProgress(frame), false));
 		return;
 	}
@@ -80,8 +80,8 @@ function calculateProgressBetweenFrames(frames, lowerBound, upperBound, isFast, 
 		}
 	} else if (upperBound - lowerBound > 1) {
 		const midpoint = Math.floor((lowerBound + upperBound) / 2);
-		calculateProgressBetweenFrames(frames, lowerBound, midpoint, isFast, getProgress, setProgress);
-		calculateProgressBetweenFrames(frames, midpoint, upperBound, isFast, getProgress, setProgress);
+		calculateProgressBetweenFrames(frames, lowerBound, midpoint, isFastMode, getProgress, setProgress);
+		calculateProgressBetweenFrames(frames, midpoint, upperBound, isFastMode, getProgress, setProgress);
 	}
 }
 
@@ -105,7 +105,7 @@ function calculateVisualProgress(frames, opts) {
 		frames,
 		0,
 		frames.length - 1,
-		opts && opts.fast,
+		opts && opts.fastMode,
 		getProgress,
 		setProgress
 	);
@@ -149,7 +149,7 @@ function calculatePerceptualProgress(frames, opts) {
 		frames,
 		0,
 		frames.length - 1,
-		opts && opts.fast,
+		opts && opts.fastMode,
 		getProgress,
 		setProgress
 	);
@@ -207,6 +207,7 @@ function calculateSpeedIndexes(frames, data) {
 }
 
 module.exports = {
+	calculateFastModeAllowableChange,
 	calculateFrameSimilarity,
 	calculateVisualProgress,
 	calculatePerceptualProgress,
