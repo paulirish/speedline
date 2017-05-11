@@ -79,6 +79,8 @@ var cli = meow([
 	'',
 	'Options',
 	'  -p, --pretty  Pretty print the output',
+	'  --fast  Skip parsing frames between similar ones',
+	'          DISCLAIMER: may result in different metrics due to skipped frames',
 	'',
 	'Examples',
 	'  $ speedline ./timeline.json'
@@ -91,7 +93,11 @@ if (cli.input.length !== 1) {
 
 var filePath = path.resolve(process.cwd(), cli.input[0]);
 
-speedIndex(filePath).then(function (res) {
+if (cli.flags.fast) {
+	console.warn('WARNING: using --fast may result in different metrics due to skipped frames');
+}
+
+speedIndex(filePath, {fastMode: cli.flags.fast}).then(function (res) {
 	if (cli.flags.pretty) {
 		return displayPretty(res);
 	}

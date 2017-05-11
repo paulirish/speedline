@@ -108,7 +108,9 @@ function extractFramesFromTimeline(timeline, opts) {
 function frame(imgBuff, ts) {
 	let _histogram = null;
 	let _progress = null;
+	let _isProgressInterpolated = null;
 	let _perceptualProgress = null;
+	let _isPerceptualProgressInterpolated = null;
 	let _parsedImage = null;
 
 	return {
@@ -126,12 +128,14 @@ function frame(imgBuff, ts) {
 			return ts;
 		},
 
-		setProgress: function (progress) {
+		setProgress: function (progress, isInterpolated) {
 			_progress = progress;
+			_isProgressInterpolated = Boolean(isInterpolated);
 		},
 
-		setPerceptualProgress: function (progress) {
+		setPerceptualProgress: function (progress, isInterpolated) {
 			_perceptualProgress = progress;
+			_isPerceptualProgressInterpolated = Boolean(isInterpolated);
 		},
 
 		getImage: function () {
@@ -149,8 +153,16 @@ function frame(imgBuff, ts) {
 			return _progress;
 		},
 
+		isProgressInterpolated: function () {
+			return _isProgressInterpolated;
+		},
+
 		getPerceptualProgress: function () {
 			return _perceptualProgress;
+		},
+
+		isPerceptualProgressInterpolated: function () {
+			return _isPerceptualProgressInterpolated;
 		}
 	};
 }
