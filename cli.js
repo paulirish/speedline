@@ -78,9 +78,9 @@ var cli = meow([
 	'  $ speedline <timeline>',
 	'',
 	'Options',
-	'  -p, --pretty  Pretty print the output',
-	'  --fast  Skip parsing frames between similar ones',
-	'          DISCLAIMER: may result in different metrics due to skipped frames',
+	'  --pretty  Pretty print the output',
+	'  --fast    Skip parsing frames between similar ones',
+	'              Disclaimer: may result in different metrics due to skipped frames',
 	'',
 	'Examples',
 	'  $ speedline ./timeline.json'

@@ -30,7 +30,9 @@ $ speedline --help
     $ speedline <timeline> [options]
 
   Options
-    -p, --pretty  Pretty print the output
+    --pretty  Pretty print the output
+    --fast    Skip parsing frames between similar ones
+                Disclaimer: may result in different metrics due to skipped frames
 
   Examples
     $ speedline ./timeline.json
@@ -62,8 +64,9 @@ speedline('./timeline').then(results => {
 
 * (string | object[]) `timeline`
 * (object) `opts`
-* returns (Promise) resolving with an object containing:
-  * `beginning` (number) - Recording start timestamp    
+
+Returns a (Promise) resolving with an object containing:
+  * `beginning` (number) - Recording start timestamp
   * `end` (number) - Recording end timestamp
   * `speedIndex` (number) - speed index value.
   * `perceptualSpeedIndex` (number) - perceptual speed index value.
@@ -72,13 +75,13 @@ speedline('./timeline').then(results => {
   * `duration` (number) - timeline recording duration in ms.
   * `frames` ([Frame](#frame)[]) - array of all the frames extracted from the timeline.
 
-If the type of the timeline parameter is:
+**`timeline` parameter**:
 * `string` - the parameter represents the location of the of file containing the timeline.
 * `array` - the parameter represents the traceEvents content of the timeline file.
 
-`opts`
+**`opts` parameter**:
 * `timeOrigin`: Provides the baseline timeStamp, typically navigationStart. Must be a monotonic clock timestamp that matches the trace.  E.g. `speedline('trace.json', {timeOrigin: 103205446186})`
-
+* `fastMode`: If the elapsed time and difference in similarity between two screenshots are small, fastMode will skip decoding and evaluating the frames between them.
 
 #### `Frame`
 
