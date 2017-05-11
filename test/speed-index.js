@@ -26,8 +26,8 @@ test('fast mode allowable change shrinks over time', t => {
 
 test('frame similarity should reflect SSIM', async t => {
 	const data = calculateVisualProgressFromImages([
-		'./assets/frameA.jpg',
-		'./assets/frameC.jpg'
+		'./test/assets/frameA.jpg',
+		'./test/assets/frameC.jpg'
 	]);
 
 	const similarity = speedIndex.calculateFrameSimilarity(data.frames[0], data.frames[1]);
@@ -37,14 +37,14 @@ test('frame similarity should reflect SSIM', async t => {
 });
 
 test('visual progress should be 100 if there is a single frame only', async t => {
-	const data = calculateVisualProgressFromImages(['./assets/grayscale.jpg']);
+	const data = calculateVisualProgressFromImages(['./test/assets/grayscale.jpg']);
 	t.is(data.frames[0].getProgress(), 100);
 });
 
 test('visual progress should be 100 if there is not change', async t => {
 	const data = calculateVisualProgressFromImages([
-		'./assets/grayscale.jpg',
-		'./assets/grayscale.jpg'
+		'./test/assets/grayscale.jpg',
+		'./test/assets/grayscale.jpg'
 	]);
 
 	for (const frame of data.frames) {
@@ -54,8 +54,8 @@ test('visual progress should be 100 if there is not change', async t => {
 
 test('visual progress should have 0 and 100 for different images', async t => {
 	const data = calculateVisualProgressFromImages([
-		'./assets/Solid_black.jpg',
-		'./assets/grayscale.jpg'
+		'./test/assets/Solid_black.jpg',
+		'./test/assets/grayscale.jpg'
 	]);
 
 	t.is(data.frames[0].getProgress(), 0);
@@ -64,10 +64,10 @@ test('visual progress should have 0 and 100 for different images', async t => {
 
 test('perceptual progress should use SSIM', async t => {
 	const data = calculateVisualProgressFromImages([
-		'./assets/frameWhite.jpg',
-		'./assets/frameA.jpg',
-		'./assets/frameB.jpg',
-		'./assets/frameC.jpg'
+		'./test/assets/frameWhite.jpg',
+		'./test/assets/frameA.jpg',
+		'./test/assets/frameB.jpg',
+		'./test/assets/frameC.jpg'
 	]);
 
 	speedIndex.calculatePerceptualProgress(data.frames);
@@ -88,8 +88,8 @@ test('perceptual progress should use SSIM', async t => {
 
 test('speed index calculate the right value', async t => {
 	const data = calculateVisualProgressFromImages([
-		'./assets/Solid_black.jpg',
-		'./assets/grayscale.jpg'
+		'./test/assets/Solid_black.jpg',
+		'./test/assets/grayscale.jpg'
 	]);
 
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
@@ -98,7 +98,7 @@ test('speed index calculate the right value', async t => {
 });
 
 test('speed indexes calculated for trace w/ 1 frame @ 4242ms', async t => {
-	const data = await frame.extractFramesFromTimeline('./assets/oneframe-content.json');
+	const data = await frame.extractFramesFromTimeline('./test/assets/oneframe-content.json');
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
@@ -107,7 +107,7 @@ test('speed indexes calculated for trace w/ 1 frame @ 4242ms', async t => {
 });
 
 test('speed indexes calculated for 2 frame (blank @1s, content @ 2s) trace', async t => {
-	const data = await frame.extractFramesFromTimeline('./assets/twoframes-blank_content.json');
+	const data = await frame.extractFramesFromTimeline('./test/assets/twoframes-blank_content.json');
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
@@ -116,7 +116,7 @@ test('speed indexes calculated for 2 frame (blank @1s, content @ 2s) trace', asy
 });
 
 test('speed indexes calculated for 2 frame (content @1s, more content @2s) trace', async t => {
-	const data = await frame.extractFramesFromTimeline('./assets/twoframes-content_more.json');
+	const data = await frame.extractFramesFromTimeline('./test/assets/twoframes-content_more.json');
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
@@ -125,7 +125,7 @@ test('speed indexes calculated for 2 frame (content @1s, more content @2s) trace
 });
 
 test('speed indexes calculated for 3 frame (blank @1s, content @2s, more content @3s) trace', async t => {
-	const data = await frame.extractFramesFromTimeline('./assets/threeframes-blank_content_more.json');
+	const data = await frame.extractFramesFromTimeline('./test/assets/threeframes-blank_content_more.json');
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
@@ -134,7 +134,7 @@ test('speed indexes calculated for 3 frame (blank @1s, content @2s, more content
 });
 
 test('speed indexes calculated for realistic trace', async t => {
-	const data = await frame.extractFramesFromTimeline('./assets/progressive-app-m59.json');
+	const data = await frame.extractFramesFromTimeline('./test/assets/progressive-app-m59.json');
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
@@ -143,8 +143,8 @@ test('speed indexes calculated for realistic trace', async t => {
 });
 
 test('speed indexes calculated with --fast', t => {
-	const mockInitialFrame = fs.readFileSync('./assets/frameWhite.jpg');
-	const mockTargetFrame = fs.readFileSync('./assets/frameC.jpg');
+	const mockInitialFrame = fs.readFileSync('./test/assets/frameWhite.jpg');
+	const mockTargetFrame = fs.readFileSync('./test/assets/frameC.jpg');
 	const mockData = getMockProgressFramesForFast(mockInitialFrame, mockTargetFrame);
 	speedIndex.calculateVisualProgress(mockData.frames, {fastMode: true});
 	speedIndex.calculatePerceptualProgress(mockData.frames, {fastMode: true});
