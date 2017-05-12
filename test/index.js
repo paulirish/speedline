@@ -14,7 +14,7 @@ test('speedline return object should contain timing informations', async t => {
 test('speedline return object should contain speed index', async t => {
 	const results = await speedline(TIMELINE_PATH);
 	t.is(typeof results.speedIndex, 'number');
-	t.is(Math.floor(results.speedIndex), 1133);
+	t.is(Math.floor(results.speedIndex), 1134);
 });
 
 test('speedline can takes timeOrigin option and adjusts results', async t => {
