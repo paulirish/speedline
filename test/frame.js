@@ -27,6 +27,15 @@ test('getHistogram should not take into account white pixels', async t => {
 	}
 });
 
+test('getHistogram should take into account brightly colored pixels', async t => {
+	const imgBuff = fs.readFileSync('./assets/rainbow.jpg');
+	const res = await frame.create(imgBuff, DEFAULT_TS).getHistogram();
+
+	for (const x of res) {
+		t.true(x[255] > 0);
+	}
+});
+
 test('frames can set and retrieve progress', t => {
 	const PROGRESS = 43;
 	const f = frame.create(DEFAULT_IMAGE, DEFAULT_TS);
