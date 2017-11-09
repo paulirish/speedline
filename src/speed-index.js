@@ -5,7 +5,7 @@ const imageSSIM = require('image-ssim');
 /* BEGIN FAST MODE CONSTANTS - See function doc for explanation */
 const fastModeAllowableChangeMax = 5;
 const fastModeAllowableChangeMedian = 3;
-const fastModeAllowableChangeMin = 1;
+const fastModeAllowableChangeMin = -1;
 
 const fastModeConstant = fastModeAllowableChangeMin;
 const fastModeMultiplier = fastModeAllowableChangeMax - fastModeConstant;

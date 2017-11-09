@@ -86,14 +86,20 @@ function extractFramesFromTimeline(timeline, opts) {
 	const startTs = (opts.timeOrigin || events[0].ts) / 1000;
 	const endTs = events[events.length - 1].ts / 1000;
 
+	let lastFrame = null;
 	const rawScreenshots = events.filter(e => e.cat.includes(screenshotTraceCategory) && e.ts >= startTs * 1000);
 	const frames = rawScreenshots.map(function (evt) {
 		const base64img = evt.args && evt.args.snapshot;
 		const timestamp = evt.ts / 1000;
 
+		if (base64img === lastFrame) {
+			return null;
+		}
+
+		lastFrame = base64img;
 		const imgBuff = new Buffer(base64img, 'base64');
 		return frame(imgBuff, timestamp);
-	});
+	}).filter(Boolean);
 
 	if (frames.length === 0) {
 		return Promise.reject(new Error('No screenshots found in trace'));

@@ -56,7 +56,30 @@ test('extract frames should support json', async t => {
 	const data = await frame.extractFramesFromTimeline(trace);
 	t.is(data.startTs, 103204916.772, 'data.startTs doesn\'t match expected value');
 	t.true(Array.isArray(data.frames), 'Frames is not an array');
-	t.is(data.frames.length, 7, 'Number of frames is incorrect');
+	t.is(data.frames.length, 6, 'Number of frames is incorrect');
+});
+
+test('extract frames should drop duplicates', async t => {
+	const trace = {traceEvents: []};
+	const duplicateImage = fs.readFileSync('./assets/frameA.jpg').toString('base64');
+	for (let i = 0; i < 1000; i++) {
+		trace.traceEvents.push({
+			cat: 'disabled-by-default-devtools.screenshot',
+			ts: i * 1000,
+			args: {snapshot: duplicateImage}
+		});
+	}
+
+	const newImage = fs.readFileSync('./assets/frameC.jpg').toString('base64');
+	trace.traceEvents.push({
+		cat: 'disabled-by-default-devtools.screenshot',
+		ts: 1001 * 1000,
+		args: {snapshot: newImage}
+	});
+
+	const data = await frame.extractFramesFromTimeline(trace);
+	t.true(Array.isArray(data.frames), 'Frames is not an array');
+	t.is(data.frames.length, 3, 'Number of frames is incorrect');
 });
 
 test('extract frames from timeline supports options', async t => {
