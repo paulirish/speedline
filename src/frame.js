@@ -31,15 +31,16 @@ function convertPixelsToHistogram(img) {
 		createHistogramArray()
 	];
 
-	for (let channel = 0; channel < histograms.length; channel++) {
+	for (let j = 0; j < height; j++) {
 		for (let i = 0; i < width; i++) {
-			for (let j = 0; j < height; j++) {
-				const pixelValue = getPixel(i, j, channel, width, img.data);
+			// Erase pixels considered as white
+			if (isWhitePixel(i, j, img)) {
+				continue;
+			}
 
-				// Erase pixels considered as white
-				if (!isWhitePixel(i, j, img)) {
-					histograms[channel][pixelValue]++;
-				}
+			for (let channel = 0; channel < histograms.length; channel++) {
+				const pixelValue = getPixel(i, j, channel, width, img.data);
+				histograms[channel][pixelValue]++;
 			}
 		}
 	}
