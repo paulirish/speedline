@@ -82,6 +82,7 @@ Returns a (Promise) resolving with an object containing:
 **`opts` parameter**:
 * `timeOrigin`: Provides the baseline timeStamp, typically navigationStart. Must be a monotonic clock timestamp that matches the trace.  E.g. `speedline('trace.json', {timeOrigin: 103205446186})`
 * `fastMode`: If the elapsed time and difference in similarity between two screenshots are small, fastMode will skip decoding and evaluating the frames between them.
+* `include`: Specifies which speed indexes to compute, can be one of `all|speedIndex|perceptualSpeedIndex`, defaults to `all`.
 
 #### `Frame`
 
