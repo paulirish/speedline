@@ -94,7 +94,6 @@ test('speed index calculate the right value', async t => {
 
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
 	t.is(indexes.speedIndex, 1000);
-	t.is(indexes.perceptualSpeedIndex, 1000);
 });
 
 test('speed indexes calculated for trace w/ 1 frame @ 4242ms', async t => {

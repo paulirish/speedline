@@ -21,6 +21,12 @@ function calculateValues(frames, data) {
 	};
 }
 
+const Include = {
+	All: 'all',
+	pSI: 'perceptualSpeedIndex',
+	SI: 'speedIndex'
+};
+
 /**
  * Retrieve speed index informations
  * @param  {string|Array|DevtoolsTimelineModel} timeline
@@ -28,10 +34,23 @@ function calculateValues(frames, data) {
  * @return {Promise} resolving with an object containing the speed index informations
  */
 module.exports = function (timeline, opts) {
+	const include = opts && opts.include || Include.All;
+	// Check for invalid `include` values
+	if (!Object.keys(Include).some(key => Include[key] === include)) {
+		throw new Error(`Unrecognized include option: ${include}`);
+	}
+
 	return frame.extractFramesFromTimeline(timeline, opts).then(function (data) {
 		const frames = data.frames;
-		speedIndex.calculateVisualProgress(frames, opts);
-		speedIndex.calculatePerceptualProgress(frames, opts);
+
+		if (include === Include.All || include === Include.SI) {
+			speedIndex.calculateVisualProgress(frames, opts);
+		}
+
+		if (include === Include.All || include === Include.pSI) {
+			speedIndex.calculatePerceptualProgress(frames, opts);
+		}
+
 		return calculateValues(frames, data);
 	});
 };

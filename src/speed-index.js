@@ -158,20 +158,23 @@ function calculatePerceptualProgress(frames, opts) {
 }
 
 function calculateSpeedIndexes(frames, data) {
+	const hasVisualProgress = typeof frames[0].getProgress() === 'number';
+	const hasPerceptualProgress = typeof frames[0].getPerceptualProgress() === 'number';
+	const progressToUse = hasVisualProgress ? 'getProgress' : 'getPerceptualProgress';
 	const startTs = data.startTs;
 	let visuallyCompleteTs;
 	let firstPaintTs;
 
 	// find first paint
 	for (let i = 0; i < frames.length && !firstPaintTs; i++) {
-		if (frames[i].getProgress() > 0) {
+		if (frames[i][progressToUse]() > 0) {
 			firstPaintTs = frames[i].getTimeStamp();
 		}
 	}
 
 	// find visually complete
 	for (let i = 0; i < frames.length && !visuallyCompleteTs; i++) {
-		if (frames[i].getProgress() >= 100) {
+		if (frames[i][progressToUse]() >= 100) {
 			visuallyCompleteTs = frames[i].getTimeStamp();
 		}
 	}
@@ -197,6 +200,9 @@ function calculateSpeedIndexes(frames, data) {
 		prevProgress = frame.getProgress() / 100;
 		prevPerceptualProgress = frame.getPerceptualProgress() / 100;
 	});
+
+	speedIndex = hasVisualProgress ? speedIndex : undefined;
+	perceptualSpeedIndex = hasPerceptualProgress ? perceptualSpeedIndex : undefined;
 
 	return {
 		firstPaintTs,

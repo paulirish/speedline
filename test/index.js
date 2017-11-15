@@ -15,6 +15,13 @@ test('speedline return object should contain speed index', async t => {
 	const results = await speedline(TIMELINE_PATH);
 	t.is(typeof results.speedIndex, 'number');
 	t.is(Math.floor(results.speedIndex), 1134);
+	t.is(Math.floor(results.perceptualSpeedIndex), 1156);
+});
+
+test('speedline return object should only compute what is asked', async t => {
+	const results = await speedline(TIMELINE_PATH, {include: 'perceptualSpeedIndex'});
+	t.is(typeof results.speedIndex, 'undefined');
+	t.is(Math.floor(results.perceptualSpeedIndex), 1156);
 });
 
 test('speedline can takes timeOrigin option and adjusts results', async t => {
