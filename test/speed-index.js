@@ -111,7 +111,7 @@ test('speed indexes calculated for 2 frame (blank @1s, content @ 2s) trace', asy
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
-	t.is(Math.floor(indexes.speedIndex), 1980);
+	t.is(Math.floor(indexes.speedIndex), 1970);
 	t.is(Math.floor(indexes.perceptualSpeedIndex), 2000);
 });
 
@@ -138,7 +138,7 @@ test('speed indexes calculated for realistic trace', async t => {
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
-	t.is(Math.floor(indexes.speedIndex), 537);
+	t.is(Math.floor(indexes.speedIndex), 542);
 	t.is(Math.floor(indexes.perceptualSpeedIndex), 578);
 });
 

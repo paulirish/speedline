@@ -18,12 +18,21 @@ test('getHistogram get the right histogram for black pixel', async t => {
 	}
 });
 
-test('getHistogram should not takes in account white pixels', async t => {
+test('getHistogram should not take into account white pixels', async t => {
 	const imgBuff = fs.readFileSync('./test/assets/grayscale.jpg');
 	const res = await frame.create(imgBuff, DEFAULT_TS).getHistogram();
 
 	for (const x of res) {
 		t.true(x[255] === 0, 'Highest pixel is not white');
+	}
+});
+
+test('getHistogram should take into account brightly colored pixels', async t => {
+	const imgBuff = fs.readFileSync('./assets/rainbow.jpg');
+	const res = await frame.create(imgBuff, DEFAULT_TS).getHistogram();
+
+	for (const x of res) {
+		t.true(x[255] > 0);
 	}
 });
 

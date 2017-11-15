@@ -7,6 +7,12 @@ function getPixel(x, y, channel, width, buff) {
 	return buff[(x + y * width) * 4 + channel];
 }
 
+function isWhitePixel(i, j, img) {
+	return getPixel(i, j, 0, img.width, img.data) >= 249 &&
+			getPixel(i, j, 1, img.width, img.data) >= 249 &&
+			getPixel(i, j, 2, img.width, img.data) >= 249;
+}
+
 function convertPixelsToHistogram(img) {
 	const createHistogramArray = function () {
 		const ret = new Array(256);
@@ -31,9 +37,7 @@ function convertPixelsToHistogram(img) {
 				const pixelValue = getPixel(i, j, channel, width, img.data);
 
 				// Erase pixels considered as white
-				if (getPixel(i, j, 0, width, img.data) < 249 &&
-						getPixel(i, j, 1, width, img.data) < 249 &&
-						getPixel(i, j, 2, width, img.data) < 249) {
+				if (!isWhitePixel(i, j, img)) {
 					histograms[channel][pixelValue]++;
 				}
 			}
