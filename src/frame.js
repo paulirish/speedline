@@ -88,7 +88,7 @@ function extractFramesFromTimeline(timeline, opts) {
 
 	let lastFrame = null;
 	const rawScreenshots = events.filter(e => e.cat.includes(screenshotTraceCategory) && e.ts >= startTs * 1000);
-	const frames = rawScreenshots.map(function (evt) {
+	const uniqueFrames = rawScreenshots.map(function (evt) {
 		const base64img = evt.args && evt.args.snapshot;
 		const timestamp = evt.ts / 1000;
 
@@ -101,17 +101,17 @@ function extractFramesFromTimeline(timeline, opts) {
 		return frame(imgBuff, timestamp);
 	}).filter(Boolean);
 
-	if (frames.length === 0) {
+	if (uniqueFrames.length === 0) {
 		return Promise.reject(new Error('No screenshots found in trace'));
 	}
 	// add white frame to beginning of trace
-	const fakeWhiteFrame = frame(synthesizeWhiteFrame(frames), startTs);
-	frames.unshift(fakeWhiteFrame);
+	const fakeWhiteFrame = frame(synthesizeWhiteFrame(uniqueFrames), startTs);
+	uniqueFrames.unshift(fakeWhiteFrame);
 
 	const data = {
 		startTs,
 		endTs,
-		frames: frames
+		frames: uniqueFrames
 	};
 	return Promise.resolve(data);
 }
