@@ -1,4 +1,4 @@
-# speedline [![Build Status](https://travis-ci.org/pmdartus/speedline.svg?branch=master)](https://travis-ci.org/pmdartus/speedline) [![NPM speedline package](https://img.shields.io/npm/v/speedline.svg)](https://npmjs.org/package/speedline)
+# speedline [![Build Status](https://travis-ci.org/paulirish/speedline.svg?branch=master)](https://travis-ci.org/paulirish/speedline) [![NPM speedline package](https://img.shields.io/npm/v/speedline.svg)](https://npmjs.org/package/speedline)
 
 
 ![speedline screenshot](/screenshot.png?raw=true)
