@@ -162,8 +162,8 @@ test('speed indexes calculated with --fast', t => {
 
 test('speed indexes calculated with --fast do not skip large time periods', t => {
 	const mockData = {frames: [], data: {startTs: 0}};
-	const whiteFrame = fs.readFileSync('./assets/frameWhite.jpg');
-	const targetFrame = fs.readFileSync('./assets/frameC.jpg');
+	const whiteFrame = fs.readFileSync('./test/assets/frameWhite.jpg');
+	const targetFrame = fs.readFileSync('./test/assets/frameC.jpg');
 	mockData.frames.push(frame.create(whiteFrame, 10000));
 	mockData.frames.push(frame.create(whiteFrame, 20000));
 	mockData.frames.push(frame.create(targetFrame, 30000));

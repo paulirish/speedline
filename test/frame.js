@@ -61,7 +61,7 @@ test('extract frames should support json', async t => {
 
 test('extract frames should drop duplicates', async t => {
 	const trace = {traceEvents: []};
-	const duplicateImage = fs.readFileSync('./assets/frameA.jpg').toString('base64');
+	const duplicateImage = fs.readFileSync('./test/assets/frameA.jpg').toString('base64');
 	for (let i = 0; i < 1000; i++) {
 		trace.traceEvents.push({
 			cat: 'disabled-by-default-devtools.screenshot',
@@ -70,7 +70,7 @@ test('extract frames should drop duplicates', async t => {
 		});
 	}
 
-	const newImage = fs.readFileSync('./assets/frameC.jpg').toString('base64');
+	const newImage = fs.readFileSync('./test/assets/frameC.jpg').toString('base64');
 	trace.traceEvents.push({
 		cat: 'disabled-by-default-devtools.screenshot',
 		ts: 1001 * 1000,
