@@ -2,7 +2,7 @@ import fs from 'fs';
 import test from 'ava';
 import frame from '../src/frame';
 
-const DEFAULT_IMAGE = fs.readFileSync('./assets/Solid_black.jpg');
+const DEFAULT_IMAGE = fs.readFileSync('./test/assets/Solid_black.jpg');
 const DEFAULT_TS = new Date().getTime();
 
 test('getTimeStamp returns the right timestamps', t => {
@@ -19,7 +19,7 @@ test('getHistogram get the right histogram for black pixel', async t => {
 });
 
 test('getHistogram should not take into account white pixels', async t => {
-	const imgBuff = fs.readFileSync('./assets/grayscale.jpg');
+	const imgBuff = fs.readFileSync('./test/assets/grayscale.jpg');
 	const res = await frame.create(imgBuff, DEFAULT_TS).getHistogram();
 
 	for (const x of res) {
@@ -45,14 +45,14 @@ test('frames can set and retrieve progress', t => {
 });
 
 test('extract frames from timeline should return a data object with an array of frames', async t => {
-	const data = await frame.extractFramesFromTimeline('./assets/nyt.json');
+	const data = await frame.extractFramesFromTimeline('./test/assets/nyt.json');
 	t.is(data.startTs, 282644630.041, 'data.startTs doesn\'t match expected value');
 	t.truthy(data.endTs, 'data.endTs doesn\'t exist');
 	t.true(Array.isArray(data.frames), 'Frames is not an array');
 });
 
 test('extract frames should support json', async t => {
-	const trace = JSON.parse(fs.readFileSync('./assets/progressive-app.json', 'utf-8'));
+	const trace = JSON.parse(fs.readFileSync('./test/assets/progressive-app.json', 'utf-8'));
 	const data = await frame.extractFramesFromTimeline(trace);
 	t.is(data.startTs, 103204916.772, 'data.startTs doesn\'t match expected value');
 	t.true(Array.isArray(data.frames), 'Frames is not an array');
@@ -60,7 +60,7 @@ test('extract frames should support json', async t => {
 });
 
 test('extract frames from timeline supports options', async t => {
-	const data = await frame.extractFramesFromTimeline('./assets/progressive-app.json', {timeOrigin: 103206183179});
+	const data = await frame.extractFramesFromTimeline('./test/assets/progressive-app.json', {timeOrigin: 103206183179});
 	t.is(data.startTs, 103206183.179, 'data.startTs doesn\'t match supplied timeOrigin value');
 	t.truthy(data.endTs, 'data.endTs doesn\'t exist');
 	t.true(Array.isArray(data.frames), 'Frames is not an array');
