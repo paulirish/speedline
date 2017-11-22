@@ -26,7 +26,7 @@
     "performance"
   ],
   "dependencies": {
-    "babar": "0.0.3",
+    "babar": "0.2.0",
     "image-ssim": "^0.2.0",
     "jpeg-js": "^0.1.2",
     "loud-rejection": "^1.6.0",

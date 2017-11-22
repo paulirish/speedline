@@ -54,11 +54,11 @@ function displayPretty(res) {
 	var baseTs = res.frames[0].getTimeStamp();
 
 	var progress = res.frames.map(frame => [frame.getTimeStamp() - baseTs, frame.getProgress()]);
-	console.log(babar(progress));
+	console.log(babar(progress, {grid: 'grey'}));
 
 	console.log(bold('Histogram perceptual visual progress:'));
 	var perceptualProgress = res.frames.map(frame => [frame.getTimeStamp() - baseTs, frame.getPerceptualProgress()]);
-	console.log(babar(perceptualProgress));
+	console.log(babar(perceptualProgress, {grid: 'grey'}));
 }
 
 function handleError(err) {
