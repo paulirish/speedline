@@ -2,3 +2,4 @@ node_modules
 lib
 *.gif
 *.log
+package-lock.json
