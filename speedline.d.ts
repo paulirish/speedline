@@ -69,6 +69,7 @@ declare namespace Speedline {
       getPerceptualProgress(): number;
       isProgressInterpolated(): boolean;
       isPerceptualProgressInterpolated(): boolean;
+      getParsedImage(): {width: number, height: number, data: Buffer};
     }>;
 
     /** The Speed Index for the trace. Defined if opts.include was 'all' (default) or 'speedIndex'. */
