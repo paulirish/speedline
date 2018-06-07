@@ -107,11 +107,24 @@ function extractFramesFromTimeline(timeline, opts) {
 	// add white frame to beginning of trace
 	const fakeWhiteFrame = frame(synthesizeWhiteFrame(uniqueFrames), startTs);
 	uniqueFrames.unshift(fakeWhiteFrame);
+	const resourceReceived = events.filter(e => e.name === "ResourceReceiveResponse");
+	let firstRessource = -1;
+	if (resourceReceived.length > 0) {
+		const firstEvtData = resourceReceived[0].args.data.timing;
+		if (firstEvtData !== undefined) {
+			firstRessource = {
+				dns: firstEvtData.dnsEnd,
+				ssl: firstEvtData.sslEnd,
+				firstByte: firstEvtData.receiveHeadersEnd
+			};
+		}
+	}
 
 	const data = {
 		startTs,
 		endTs,
-		frames: uniqueFrames
+		frames: uniqueFrames,
+		firstRessource: firstRessource
 	};
 	return Promise.resolve(data);
 }
