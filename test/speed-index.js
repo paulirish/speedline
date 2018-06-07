@@ -139,6 +139,9 @@ test('speed indexes calculated for realistic trace', async t => {
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
 	t.is(Math.floor(indexes.speedIndex), 542);
 	t.is(Math.floor(indexes.perceptualSpeedIndex), 578);
+	t.is(Math.floor(data.firstRessource.dns), 55);
+	t.is(Math.floor(data.firstRessource.ssl), 80);
+	t.is(Math.floor(data.firstRessource.firstByte), 234);
 });
 
 test('speed indexes calculated with --fast', t => {

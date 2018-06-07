@@ -12,6 +12,7 @@ function calculateValues(frames, data) {
 	return {
 		beginning: data.startTs,
 		end: data.endTs,
+		firstRessource: data.firstRessource,
 		frames,
 		first,
 		complete,
