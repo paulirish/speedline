@@ -1,0 +1,25 @@
+{
+  "name": "speedline-core",
+  "version": "1.3.3",
+  "description": "Get the speed index from chrome dev tool timeline files",
+  "license": "MIT",
+  "repository": "https://github.com/paulirish/speedline",
+  "main": "src",
+  "engines": {
+    "node": ">=5.0"
+  },
+  "types": "speedline.d.ts",
+  "keywords": [
+    "chrome",
+    "devtool",
+    "timeline",
+    "speed",
+    "index",
+    "performance"
+  ],
+  "dependencies": {
+    "@types/node": "*",
+    "image-ssim": "^0.2.0",
+    "jpeg-js": "^0.1.2"
+  }
+}
