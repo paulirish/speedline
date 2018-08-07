@@ -11,15 +11,13 @@ The [Speed Index](https://sites.google.com/a/webpagetest.org/docs/using-webpaget
 
 Speedline also calculates the **perceptual speed index**, based on the same principal as the original speed index, but it computes the visual progression between frames using the [SSIM](https://en.wikipedia.org/wiki/Structural_similarity) instead of the histogram distance.
 
-## CLI
-
-### Install
+## Install the CLI
 
 ```bash
 $ npm install -g speedline
 ```
 
-### Usage
+## Usage
 
 > **Note:** You should enable the `screenshot` options before recording the timeline.
 
@@ -40,60 +38,9 @@ $ speedline --help
 
 By default the CLI will output the same output as [visual metrics](https://github.com/WPO-Foundation/visualmetrics). You can use the `--pretty` option if you want to have the histogram.
 
-## Module
+## The `speedline-core` module
 
-### Install
-
-```bash
-$ npm install --save speedline
-```
-
-### Usage
-
-```js
-const speedline = require('speedline');
-
-speedline('./timeline').then(results => {
-  console.log('Speed Index value:', results.speedIndex);
-});
-```
-
-### API
-
-#### `speedline(timeline [, opts])`
-
-* (string | object[]) `timeline`
-* (object) `opts`
-
-Returns a (Promise) resolving with an object containing:
-  * `beginning` (number) - Recording start timestamp
-  * `end` (number) - Recording end timestamp
-  * `speedIndex` (number) - speed index value.
-  * `perceptualSpeedIndex` (number) - perceptual speed index value.
-  * `first` (number) - duration before the first visual change in ms.
-  * `complete` (number) - duration before the last visual change in ms.
-  * `duration` (number) - timeline recording duration in ms.
-  * `frames` ([Frame](#frame)[]) - array of all the frames extracted from the timeline.
-
-**`timeline` parameter**:
-* `string` - the parameter represents the location of the of file containing the timeline.
-* `array` - the parameter represents the traceEvents content of the timeline file.
-
-**`opts` parameter**:
-* `timeOrigin`: Provides the baseline timeStamp, typically navigationStart. Must be a monotonic clock timestamp that matches the trace.  E.g. `speedline('trace.json', {timeOrigin: 103205446186})`
-* `fastMode`: If the elapsed time and difference in similarity between two screenshots are small, fastMode will skip decoding and evaluating the frames between them.
-* `include`: Specifies which speed indexes to compute, can be one of `all|speedIndex|perceptualSpeedIndex`, defaults to `all`.
-
-#### `Frame`
-
-Object representing a single screenshot.
-
-* `frame.getHistogram()`: (number[][]) - returns the frame histogram. Note that light pixels informations are removed from the histogram, for better speed index calculation accuracy.
-* `frame.getTimeStamp()`: (number) - return the frame timestamp.
-* `frame.getImage()`: (Buffer) - return the frame content.
-* `frame.getProgress()`: (number) - return the frame visual progress.
-* `frame.getPerceptualProgress()`: (number) - return the frame perceptual visual progress.
-
+See [readme of `speedline-core`](https://github.com/paulirish/speedline/blob/master/core/readme.md).
 
 ## License
 

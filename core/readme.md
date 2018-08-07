@@ -1,7 +1,12 @@
 # speedline-core
 
-This is the core module for speedline, use to reduce dependency when it is used as a lib.
-See [speedline](https://github.com/paulirish/speedline) for more details
+This is the core module for speedline, without any CLI dependencies. See [speedline](https://github.com/paulirish/speedline) for the CLI.
+
+### Install
+
+```bash
+$ npm install speedline
+```
 
 ### Usage
 
