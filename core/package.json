@@ -4,14 +4,19 @@
   "description": "Get the speed index from chrome dev tool timeline files",
   "license": "MIT",
   "repository": "https://github.com/paulirish/speedline",
-  "main": "src",
+  "main": "lib",
   "engines": {
     "node": ">=5.0"
+  },
+  "scripts": {
+    "lint": "xo",
+    "unit": "ava",
+    "test": "yarn run lint && yarn run unit"
   },
   "types": "speedline.d.ts",
   "keywords": [
     "chrome",
-    "devtool",
+    "devtools",
     "timeline",
     "speed",
     "index",
@@ -21,5 +26,9 @@
     "@types/node": "*",
     "image-ssim": "^0.2.0",
     "jpeg-js": "^0.1.2"
+  },
+  "devDependencies": {
+    "ava": "^0.19.1",
+    "xo": "^0.14.0"
   }
 }
