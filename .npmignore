@@ -1,3 +1,4 @@
 test
 src
 *.png
+core/node_modules
