@@ -1,8 +1,8 @@
 import fs from 'fs';
 import test from 'ava';
 
-import frame from '../src/frame';
-import speedIndex from '../src/speed-index';
+import frame from '../lib/frame';
+import speedIndex from '../lib/speed-index';
 
 function calculateVisualProgressFromImages(images = [], delay = 1000) {
 	const startTs = new Date().getTime();
