@@ -98,3 +98,7 @@ Object representing a single screenshot.
 ## License
 
 MIT © [Pierre-Marie Dartus](https://github.com/pmdartus)
+
+## Dev
+
+The repo is split into CLI and core. The core dependencies are duplicated in both package.json files. It is what it is.
