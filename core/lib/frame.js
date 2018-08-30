@@ -8,7 +8,7 @@ const jpeg = require('jpeg-js');
  * @typedef {import('../speedline').Options<IncludeType>} Options
  * @typedef {import('../speedline').TraceEvent} TraceEvent
  * @typedef {import('../speedline').Output['frames'][number]} Frame
- * @typedef {{data: Buffer, width: number, height: number}} ImageData
+ * @typedef {import('jpeg-js').RawImageData<Buffer>} ImageData
  */
 
 /**
