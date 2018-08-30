@@ -1,25 +1,13 @@
 /// <reference types="node" />
 
-interface TraceEvent {
-  name: string;
-  args: {
-    data?: {
-      url?: string
-    };
-  };
-  tid: number;
-  ts: number;
-  dur: number;
-}
-
-type IncludeType = 'all' | 'speedIndex' | 'perceptualSpeedIndex';
-
 /**
  * @param trace Trace file location or an array of traceEvents.
  */
-declare function Speedline<I extends IncludeType = 'all'>(trace: string|TraceEvent[], opts: Speedline.Options<I>): Promise<Speedline.Output<I>>;
+declare function Speedline<I extends Speedline.IncludeType = 'all'>(trace: string|Speedline.TraceEvent[], opts: Speedline.Options<I>): Promise<Speedline.Output<I>>;
 
 declare namespace Speedline {
+  type IncludeType = 'all' | 'speedIndex' | 'perceptualSpeedIndex';
+
   interface Options<I extends IncludeType = 'all'> {
     /**
      * Provides the baseline timeStamp, typically navigationStart. Must be a monotonic clock
@@ -36,6 +24,20 @@ declare namespace Speedline {
      * `all|speedIndex|perceptualSpeedIndex`. Defaults to `all`.
      */
     include?: I;
+  }
+
+  interface TraceEvent {
+    name: string;
+    cat: string;
+    args: {
+      data?: {
+        url?: string
+      };
+      snapshot?: string;
+    };
+    tid: number;
+    ts: number;
+    dur: number;
   }
 
   interface Output<I extends (IncludeType | 'unknown') = 'unknown'> {

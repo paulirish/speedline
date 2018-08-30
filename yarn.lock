@@ -2,6 +2,32 @@
 # yarn lockfile v1
 
 
+"@types/jpeg-js@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@types/jpeg-js/-/jpeg-js-0.3.0.tgz#5971f0aa50900194e9565711c265c10027385e89"
+  dependencies:
+    "@types/node" "*"
+
+"@types/loud-rejection@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@types/loud-rejection/-/loud-rejection-1.6.0.tgz#a24a01076472fe159af2f5729ca68b28ba5e4559"
+
+"@types/meow@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@types/meow/-/meow-4.0.1.tgz#cb80b9f0b8695df7ac15f0165585bcd2d0a6d94f"
+  dependencies:
+    "@types/minimist-options" "*"
+
+"@types/minimist-options@*":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/minimist-options/-/minimist-options-3.0.0.tgz#0dabe91d07e21c9b3fe9614ca862aab202566eb5"
+  dependencies:
+    "@types/minimist" "*"
+
+"@types/minimist@*":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.0.tgz#69a23a3ad29caf0097f06eda59b361ee2f0639f6"
+
 "@types/node@*":
   version "8.10.11"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.11.tgz#971ea8cb91adbe0b74e3fbd867dec192d5893a5f"
@@ -1478,6 +1504,10 @@ type-check@~0.3.2:
 typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
+
+typescript@3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.0.3.tgz#4853b3e275ecdaa27f78fda46dc273a7eb7fc1c8"
 
 unzip-response@^1.0.2:
   version "1.0.2"

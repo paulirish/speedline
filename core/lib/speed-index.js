@@ -12,6 +12,8 @@ const fastModeMultiplier = fastModeAllowableChangeMax - fastModeConstant;
 const fastModeExponentiationCoefficient = Math.log((fastModeAllowableChangeMedian - fastModeConstant) / fastModeMultiplier);
 /* END FAST MODE CONSTANTS - See function doc for explanation */
 
+/** @typedef {import('../speedline').Output['frames'][number]} Frame */
+
 /**
  * This computes the allowed percentage of change between two frames in fast mode where we won't examine the frames in between them.
  * It follows an exponential function such that:
@@ -20,6 +22,7 @@ const fastModeExponentiationCoefficient = Math.log((fastModeAllowableChangeMedia
  *  - We allow up to FAST_MODE_ALLOWABLE_CHANGE_MIN percent difference when the frames are very far apart.
  *
  *  f(t) = FAST_MODE_MULTIPLIER * e^(FAST_MODE_EXPONENTIATION_COEFFICIENT * t) + FAST_MODE_CONSTANT
+ * @param {number} elapsedTime
  */
 function calculateFastModeAllowableChange(elapsedTime) {
 	const elapsedTimeInSeconds = elapsedTime / 1000;
@@ -27,6 +30,11 @@ function calculateFastModeAllowableChange(elapsedTime) {
 	return allowableChange;
 }
 
+/**
+ * @param {Frame} current
+ * @param {Frame} initial
+ * @param {Frame} target
+ */
 function calculateFrameProgress(current, initial, target) {
 	let total = 0;
 	let match = 0;
@@ -58,6 +66,14 @@ function calculateFrameProgress(current, initial, target) {
 	return progress;
 }
 
+/**
+ * @param {Array<Frame>} frames
+ * @param {number} lowerBound
+ * @param {number} upperBound
+ * @param {boolean} isFastMode
+ * @param {function(Frame): number} getProgress
+ * @param {function(Frame, number, boolean): void} setProgress
+ */
 function calculateProgressBetweenFrames(frames, lowerBound, upperBound, isFastMode, getProgress, setProgress) {
 	if (!isFastMode) {
 		frames.forEach(frame => setProgress(frame, getProgress(frame), false));
@@ -85,10 +101,15 @@ function calculateProgressBetweenFrames(frames, lowerBound, upperBound, isFastMo
 	}
 }
 
+/**
+ * @param {Array<Frame>} frames
+ * @param {{fastMode?: boolean}} opts
+ */
 function calculateVisualProgress(frames, opts) {
 	const initial = frames[0];
 	const target = frames[frames.length - 1];
 
+	/** @param {Frame} frame */
 	function getProgress(frame) {
 		if (typeof frame.getProgress() === 'number') {
 			return frame.getProgress();
@@ -97,6 +118,11 @@ function calculateVisualProgress(frames, opts) {
 		return calculateFrameProgress(frame, initial, target);
 	}
 
+	/**
+	 * @param {Frame} frame
+	 * @param {number} progress
+	 * @param {boolean} isInterpolated
+	 */
 	function setProgress(frame, progress, isInterpolated) {
 		return frame.setProgress(progress, isInterpolated);
 	}
@@ -113,6 +139,11 @@ function calculateVisualProgress(frames, opts) {
 	return frames;
 }
 
+/**
+ * @param {Frame} frame
+ * @param {Frame} target
+ * @return {number}
+ */
 function calculateFrameSimilarity(frame, target) {
 	const defaultImageConfig = {
 		// image-ssim uses this to interpret the arraybuffer NOT the desired channels to consider
@@ -127,11 +158,16 @@ function calculateFrameSimilarity(frame, target) {
 	return diff.ssim;
 }
 
+/**
+ * @param {Array<Frame>} frames
+ * @param {{fastMode?: boolean}} opts
+ */
 function calculatePerceptualProgress(frames, opts) {
 	const initial = frames[0];
 	const target = frames[frames.length - 1];
 	const initialSimilarity = calculateFrameSimilarity(initial, target);
 
+	/** @param {Frame} frame */
 	function getProgress(frame) {
 		if (typeof frame.getPerceptualProgress() === 'number') {
 			return frame.getPerceptualProgress();
@@ -141,6 +177,11 @@ function calculatePerceptualProgress(frames, opts) {
 		return Math.max(100 * (ssim - initialSimilarity) / (1 - initialSimilarity), 0);
 	}
 
+	/**
+	 * @param {Frame} frame
+	 * @param {number} progress
+	 * @param {boolean} isInterpolated
+	 */
 	function setProgress(frame, progress, isInterpolated) {
 		return frame.setPerceptualProgress(progress, isInterpolated);
 	}
@@ -157,12 +198,18 @@ function calculatePerceptualProgress(frames, opts) {
 	return frames;
 }
 
+/**
+ * @param {Array<Frame>} frames
+ * @param {{startTs: number}} data
+ * @return {{firstPaintTs: number, visuallyCompleteTs: number, speedIndex?: number, perceptualSpeedIndex?: number}}
+ */
 function calculateSpeedIndexes(frames, data) {
 	const hasVisualProgress = typeof frames[0].getProgress() === 'number';
 	const hasPerceptualProgress = typeof frames[0].getPerceptualProgress() === 'number';
 	const progressToUse = hasVisualProgress ? 'getProgress' : 'getPerceptualProgress';
 	const startTs = data.startTs;
 	let visuallyCompleteTs;
+	/** @type {number|undefined} */
 	let firstPaintTs;
 
 	// find first paint
@@ -185,7 +232,9 @@ function calculateSpeedIndexes(frames, data) {
 
 	// SI = firstPaint + sum(fP to VC){1-VC%}
 	//     github.com/pmdartus/speedline/issues/28#issuecomment-244127192
+	/** @type {number|undefined} */
 	let speedIndex = firstPaintTs - startTs;
+	/** @type {number|undefined} */
 	let perceptualSpeedIndex = firstPaintTs - startTs;
 
 	frames.forEach(function (frame) {
