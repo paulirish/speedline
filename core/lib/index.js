@@ -3,6 +3,16 @@
 const frame = require('./frame');
 const speedIndex = require('./speed-index');
 
+/**
+ * @typedef {import('../speedline').TraceEvent} TraceEvent
+ * @typedef {import('../speedline').IncludeType} IncludeType
+ * @typedef {import('../speedline').Output['frames'][number]} Frame
+ */
+
+/**
+ * @param {Array<Frame>} frames
+ * @param {{startTs: number, endTs: number}} data
+ */
 function calculateValues(frames, data) {
 	const indexes = speedIndex.calculateSpeedIndexes(frames, data);
 	const duration = Math.floor(data.endTs - data.startTs);
@@ -21,6 +31,7 @@ function calculateValues(frames, data) {
 	};
 }
 
+/** @type {{All: 'all', pSI: 'perceptualSpeedIndex', SI: 'speedIndex'}} */
 const Include = {
 	All: 'all',
 	pSI: 'perceptualSpeedIndex',
@@ -29,9 +40,10 @@ const Include = {
 
 /**
  * Retrieve speed index informations
- * @param  {string|Array|DevtoolsTimelineModel} timeline
- * @param  {?Object} opts
- * @return {Promise} resolving with an object containing the speed index informations
+ * @template {IncludeType} I
+ * @param {string|Array<TraceEvent>} timeline
+ * @param {import('../speedline').Options<I>} opts
+ * @return {Promise<import('../speedline').Output<I>>}
  */
 module.exports = function (timeline, opts) {
 	const include = opts && opts.include || Include.All;

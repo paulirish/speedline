@@ -12,6 +12,7 @@ const OUTPUT_GREEN = '\x1b[32m';
 const OUTPUT_BOLD = '\x1b[1m';
 const OUTPUT_RESET = '\x1b[22m\x1b[39m';
 
+/** @param {speedIndex.Output<'all'|'speedIndex'|'perceptualSpeedIndex'>} res */
 function display(res) {
 	const startTs = res.beginning;
 	const visualProgress = res.frames.map(frame => {
@@ -37,8 +38,11 @@ function display(res) {
 	console.log(log);
 }
 
+/** @param {speedIndex.Output<'all'>} res */
 function displayPretty(res) {
+	/** @param {string} content */
 	const green = (content) => OUTPUT_GREEN + content + OUTPUT_RESET;
+	/** @param {string} content */
 	const bold = (content) => OUTPUT_BOLD + content + OUTPUT_RESET;
 
 	console.log([
@@ -61,6 +65,7 @@ function displayPretty(res) {
 	console.log(babar(perceptualProgress, {grid: 'grey'}));
 }
 
+/** @param {Error} err */
 function handleError(err) {
 	console.error(err.message);
 	console.log(Object.keys(err));

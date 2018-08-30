@@ -3,20 +3,41 @@
 const fs = require('fs');
 const jpeg = require('jpeg-js');
 
+/**
+ * @typedef {import('../speedline').IncludeType} IncludeType
+ * @typedef {import('../speedline').Options<IncludeType>} Options
+ * @typedef {import('../speedline').TraceEvent} TraceEvent
+ * @typedef {import('../speedline').Output['frames'][number]} Frame
+ * @typedef {import('jpeg-js').RawImageData<Buffer>} ImageData
+ */
+
+/**
+ * @param {number} x
+ * @param {number} y
+ * @param {number} channel
+ * @param {number} width
+ * @param {Buffer} buff
+ */
 function getPixel(x, y, channel, width, buff) {
 	return buff[(x + y * width) * 4 + channel];
 }
 
+/**
+ * @param {number} i
+ * @param {number} j
+ * @param {ImageData} img
+ */
 function isWhitePixel(i, j, img) {
 	return getPixel(i, j, 0, img.width, img.data) >= 249 &&
 			getPixel(i, j, 1, img.width, img.data) >= 249 &&
 			getPixel(i, j, 2, img.width, img.data) >= 249;
 }
 
+/** @param {ImageData} img */
 function convertPixelsToHistogram(img) {
 	const createHistogramArray = function () {
-		const ret = new Array(256);
-		for (let i = 0; i < ret.length; i++) {
+		const ret = [];
+		for (let i = 0; i < 256; i++) {
 			ret[i] = 0;
 		}
 		return ret;
@@ -48,12 +69,13 @@ function convertPixelsToHistogram(img) {
 	return histograms;
 }
 
+/** @param {Array<Frame>} frames */
 function synthesizeWhiteFrame(frames) {
 	const firstImageData = jpeg.decode(frames[0].getImage());
 	const width = firstImageData.width;
 	const height = firstImageData.height;
 
-	const frameData = new Buffer(width * height * 4);
+	const frameData = Buffer.alloc(width * height * 4);
 	let i = 0;
 	while (i < frameData.length) {
 		frameData[i++] = 0xFF; // red
@@ -71,23 +93,32 @@ function synthesizeWhiteFrame(frames) {
 }
 
 const screenshotTraceCategory = 'disabled-by-default-devtools.screenshot';
+
+/**
+ * @param {string|Array<TraceEvent>|{traceEvents: Array<TraceEvent>}} timeline
+ * @param {Options} opts
+ */
 function extractFramesFromTimeline(timeline, opts) {
 	opts = opts || {};
+	/** @type {Array<TraceEvent>|{traceEvents: Array<TraceEvent>}} */
 	let trace;
-	trace = typeof timeline === 'string' ? fs.readFileSync(timeline, 'utf-8') : timeline;
+	timeline = typeof timeline === 'string' ? fs.readFileSync(timeline, 'utf-8') : timeline;
 	try {
-		trace = typeof trace === 'string' ? JSON.parse(trace) : trace;
+		trace = typeof timeline === 'string' ? JSON.parse(timeline) : timeline;
 	} catch (e) {
 		throw new Error('Speedline: Invalid JSON' + e.message);
 	}
+	/** @type {Array<TraceEvent>} */
 	let events = trace.traceEvents || trace;
 	events = events.sort((a, b) => a.ts - b.ts).filter(e => e.ts !== 0);
 
 	const startTs = (opts.timeOrigin || events[0].ts) / 1000;
 	const endTs = events[events.length - 1].ts / 1000;
 
+	/** @type {?string} */
 	let lastFrame = null;
 	const rawScreenshots = events.filter(e => e.cat.includes(screenshotTraceCategory) && e.ts >= startTs * 1000);
+	/** @type {Array<Frame>} */
 	const uniqueFrames = rawScreenshots.map(function (evt) {
 		const base64img = evt.args && evt.args.snapshot;
 		const timestamp = evt.ts / 1000;
@@ -97,7 +128,7 @@ function extractFramesFromTimeline(timeline, opts) {
 		}
 
 		lastFrame = base64img;
-		const imgBuff = new Buffer(base64img, 'base64');
+		const imgBuff = Buffer.from(base64img, 'base64');
 		return frame(imgBuff, timestamp);
 	}).filter(Boolean);
 
@@ -116,12 +147,23 @@ function extractFramesFromTimeline(timeline, opts) {
 	return Promise.resolve(data);
 }
 
+/**
+ * @param {Buffer} imgBuff
+ * @param {number} ts
+ * @return {Frame}
+ */
 function frame(imgBuff, ts) {
+	/** @type {?Array<Array<number>>} */
 	let _histogram = null;
+	/** @type {?number} */
 	let _progress = null;
+	/** @type {?boolean} */
 	let _isProgressInterpolated = null;
+	/** @type {?number} */
 	let _perceptualProgress = null;
+	/** @type {?boolean} */
 	let _isPerceptualProgressInterpolated = null;
+	/** @type {?ImageData} */
 	let _parsedImage = null;
 
 	return {

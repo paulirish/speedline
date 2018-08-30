@@ -33,6 +33,10 @@
     "meow": "^3.7.0"
   },
   "devDependencies": {
+    "@types/jpeg-js": "^0.3.0",
+    "@types/loud-rejection": "^1.6.0",
+    "@types/meow": "^4.0.1",
+    "typescript": "3.0.3",
     "xo": "^0.14.0"
   }
 }

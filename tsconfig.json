@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "module": "commonjs",
+    "target": "ES2017",
+    "allowJs": true,
+    "checkJs": true,
+    "strict": true,
+
+    "typeRoots": [
+      "@types",
+    ],
+    "diagnostics": true
+  },
+  "include": [
+    "./cli.js",
+    "core/lib/*.js"
+  ],
+}
