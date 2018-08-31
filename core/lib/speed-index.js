@@ -147,8 +147,8 @@ function calculateVisualProgress(frames, opts) {
 function calculateFrameSimilarity(frame, target) {
 	const defaultImageConfig = {
 		// image-ssim uses this to interpret the arraybuffer NOT the desired channels to consider
-		// jpeg-js encodes each pixel with an alpha channel set to 0xFF, so 4 channel interpretation is required
-		channels: 4
+		// wasm-jpeg decodes each pixel as RGB, so 3 channel interpretation is required
+		channels: 3
 	};
 
 	const frameData = Object.assign(frame.getParsedImage(), defaultImageConfig);

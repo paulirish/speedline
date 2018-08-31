@@ -1,14 +1,14 @@
 'use strict';
 
 const fs = require('fs');
-const jpeg = require('jpeg-js');
+// const jpeg = require('jpeg-js');
+const wasmJpeg = require('../../../../rust/wasm-jpeg/dist/index.js');
 
 /**
  * @typedef {import('../speedline').IncludeType} IncludeType
  * @typedef {import('../speedline').Options<IncludeType>} Options
  * @typedef {import('../speedline').TraceEvent} TraceEvent
- * @typedef {import('../speedline').Output['frames'][number]} Frame
- * @typedef {import('jpeg-js').RawImageData<Buffer>} ImageData
+ * @typedef {{data: Buffer, width: number, height: number}} ImageData
  */
 
 /**
@@ -19,7 +19,7 @@ const jpeg = require('jpeg-js');
  * @param {Buffer} buff
  */
 function getPixel(x, y, channel, width, buff) {
-	return buff[(x + y * width) * 4 + channel];
+	return buff[(x + y * width) * 3 + channel];
 }
 
 /**
@@ -69,27 +69,110 @@ function convertPixelsToHistogram(img) {
 	return histograms;
 }
 
-/** @param {Array<Frame>} frames */
-function synthesizeWhiteFrame(frames) {
-	const firstImageData = jpeg.decode(frames[0].getImage());
+class Frame {
+	/**
+	 * @param {Buffer} imgBuff
+	 * @param {number} ts
+	 */
+	constructor(imgBuff, ts) {
+		this._imgBuff = imgBuff;
+		this._ts = ts;
+
+		/** @type {?Array<Array<number>>} */
+		this._histogram = null;
+		/** @type {?number} */
+		this._progress = null;
+		/** @type {?boolean} */
+		this._isProgressInterpolated = null;
+		/** @type {?number} */
+		this._perceptualProgress = null;
+		/** @type {?boolean} */
+		this._isPerceptualProgressInterpolated = null;
+		/** @type {?ImageData} */
+		this._parsedImage = null;
+	}
+
+	getHistogram() {
+		if (this._histogram) {
+			return this._histogram;
+		}
+
+		const pixels = this.getParsedImage();
+		this._histogram = convertPixelsToHistogram(pixels);
+		return this._histogram;
+	}
+
+	getTimeStamp() {
+		return this._ts;
+	}
+
+	/**
+	 * @param {number} progress
+	 * @param {boolean=} isInterpolated
+	 */
+	setProgress(progress, isInterpolated) {
+		this._progress = progress;
+		this._isProgressInterpolated = Boolean(isInterpolated);
+	}
+
+	/**
+	 * @param {number} progress
+	 * @param {boolean=} isInterpolated
+	 */
+	setPerceptualProgress(progress, isInterpolated) {
+		this._perceptualProgress = progress;
+		this._isPerceptualProgressInterpolated = Boolean(isInterpolated);
+	}
+
+	getImage() {
+		return this._imgBuff;
+	}
+
+	getParsedImage() {
+		if (!this._parsedImage) {
+			this._parsedImage = wasmJpeg.decode(this._imgBuff);
+		}
+		return this._parsedImage;
+	}
+
+	getProgress() {
+		return this._progress;
+	}
+
+	isProgressInterpolated() {
+		return this._isProgressInterpolated;
+	}
+
+	getPerceptualProgress() {
+		return this._perceptualProgress;
+	}
+
+	isPerceptualProgressInterpolated() {
+		return this._isPerceptualProgressInterpolated;
+	}
+}
+
+/**
+ * @param {Array<Frame>} frames
+ * @param {number} startTs
+ * @return {Frame}
+ */
+function synthesizeWhiteFrame(frames, startTs) {
+	const firstImageData = wasmJpeg.decode(frames[0].getImage());
 	const width = firstImageData.width;
 	const height = firstImageData.height;
 
-	const frameData = Buffer.alloc(width * height * 4);
-	let i = 0;
-	while (i < frameData.length) {
-		frameData[i++] = 0xFF; // red
-		frameData[i++] = 0xFF; // green
-		frameData[i++] = 0xFF; // blue
-		frameData[i++] = 0xFF; // alpha - ignored in JPEGs
-	}
+	const frameData = Buffer.alloc(width * height * 3, 0xFF);
 
-	var jpegImageData = jpeg.encode({
+	var parsedWhiteFrame = {
 		data: frameData,
 		width: width,
 		height: height
-	});
-	return jpegImageData.data;
+	};
+	const whiteFrame = new Frame(Buffer.alloc(0), startTs);
+	whiteFrame._parsedImage = parsedWhiteFrame;
+
+	return whiteFrame;
 }
 
 const screenshotTraceCategory = 'disabled-by-default-devtools.screenshot';
@@ -129,14 +212,14 @@ function extractFramesFromTimeline(timeline, opts) {
 
 		lastFrame = base64img;
 		const imgBuff = Buffer.from(base64img, 'base64');
-		return frame(imgBuff, timestamp);
+		return new Frame(imgBuff, timestamp);
 	}).filter(Boolean);
 
 	if (uniqueFrames.length === 0) {
 		return Promise.reject(new Error('No screenshots found in trace'));
 	}
 	// add white frame to beginning of trace
-	const fakeWhiteFrame = frame(synthesizeWhiteFrame(uniqueFrames), startTs);
+	const fakeWhiteFrame = synthesizeWhiteFrame(uniqueFrames, startTs);
 	uniqueFrames.unshift(fakeWhiteFrame);
 
 	const data = {
@@ -150,77 +233,10 @@ function extractFramesFromTimeline(timeline, opts) {
 /**
  * @param {Buffer} imgBuff
  * @param {number} ts
- * @return {Frame}
  */
-function frame(imgBuff, ts) {
-	/** @type {?Array<Array<number>>} */
-	let _histogram = null;
-	/** @type {?number} */
-	let _progress = null;
-	/** @type {?boolean} */
-	let _isProgressInterpolated = null;
-	/** @type {?number} */
-	let _perceptualProgress = null;
-	/** @type {?boolean} */
-	let _isPerceptualProgressInterpolated = null;
-	/** @type {?ImageData} */
-	let _parsedImage = null;
-
-	return {
-		getHistogram: function () {
-			if (_histogram) {
-				return _histogram;
-			}
-
-			const pixels = this.getParsedImage();
-			_histogram = convertPixelsToHistogram(pixels);
-			return _histogram;
-		},
-
-		getTimeStamp: function () {
-			return ts;
-		},
-
-		setProgress: function (progress, isInterpolated) {
-			_progress = progress;
-			_isProgressInterpolated = Boolean(isInterpolated);
-		},
-
-		setPerceptualProgress: function (progress, isInterpolated) {
-			_perceptualProgress = progress;
-			_isPerceptualProgressInterpolated = Boolean(isInterpolated);
-		},
-
-		getImage: function () {
-			return imgBuff;
-		},
-
-		getParsedImage: function () {
-			if (!_parsedImage) {
-				_parsedImage = jpeg.decode(imgBuff);
-			}
-			return _parsedImage;
-		},
-
-		getProgress: function () {
-			return _progress;
-		},
-
-		isProgressInterpolated: function () {
-			return _isProgressInterpolated;
-		},
-
-		getPerceptualProgress: function () {
-			return _perceptualProgress;
-		},
-
-		isPerceptualProgressInterpolated: function () {
-			return _isPerceptualProgressInterpolated;
-		}
-	};
-}
+const create = (imgBuff, ts) => new Frame(imgBuff, ts);
 
 module.exports = {
 	extractFramesFromTimeline,
-	create: frame
+	create
 };
