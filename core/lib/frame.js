@@ -127,9 +127,7 @@ function extractFramesFromTimeline(timeline, opts) {
 
 	/** @type {?string} */
 	let lastFrame = null;
-	const rawScreenshots = events.filter(e => {
-		return e.cat.includes(screenshotTraceCategory) && e.ts >= startTs * 1000;
-	});
+	const rawScreenshots = events.filter(e => e.cat.includes(screenshotTraceCategory) && e.ts >= startTs * 1000);
 	rawScreenshots.sort((a, b) => a.ts - b.ts);
 
 	/** @type {Array<Frame>} */
