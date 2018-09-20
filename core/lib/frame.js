@@ -110,14 +110,26 @@ function extractFramesFromTimeline(timeline, opts) {
 	}
 	/** @type {Array<TraceEvent>} */
 	let events = trace.traceEvents || trace;
-	events = events.sort((a, b) => a.ts - b.ts).filter(e => e.ts !== 0);
 
-	const startTs = (opts.timeOrigin || events[0].ts) / 1000;
-	const endTs = events[events.length - 1].ts / 1000;
+	let startTs = Number.MAX_VALUE;
+	let endTs = -Number.MAX_VALUE;
+	events.forEach(e => {
+		if (e.ts === 0) {
+			return;
+		}
+
+		startTs = Math.min(startTs, e.ts);
+		endTs = Math.max(endTs, e.ts);
+	});
+
+	startTs = (opts.timeOrigin || startTs) / 1000;
+	endTs /= 1000;
 
 	/** @type {?string} */
 	let lastFrame = null;
 	const rawScreenshots = events.filter(e => e.cat.includes(screenshotTraceCategory) && e.ts >= startTs * 1000);
+	rawScreenshots.sort((a, b) => a.ts - b.ts);
+
 	/** @type {Array<Frame>} */
 	const uniqueFrames = rawScreenshots.map(function (evt) {
 		const base64img = evt.args && evt.args.snapshot;
