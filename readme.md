@@ -49,3 +49,21 @@ MIT © [Pierre-Marie Dartus](https://github.com/pmdartus)
 ## Dev
 
 The repo is split into CLI and core. The core dependencies are duplicated in both package.json files. It is what it is.
+
+To install: 
+```sh
+yarn && yarn install-all
+````
+
+#### Releasing
+
+Releasing both CLI and core:
+
+```sh
+yarn version # and bump appropriately
+# update the version in core/package.json
+git commit --amend --all # to amend into the tagged commit
+npm publish
+cd core && npm publish
+git push
+```
