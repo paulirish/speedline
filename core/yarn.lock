@@ -1963,9 +1963,9 @@ jest-validate@^19.0.2:
     leven "^2.0.0"
     pretty-format "^19.0.0"
 
-jpeg-js@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/jpeg-js/-/jpeg-js-0.1.2.tgz#135b992c0575c985cfa0f494a3227ed238583ece"
+jpeg-js@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/jpeg-js/-/jpeg-js-0.4.0.tgz#39adab7245b6d11e918ba5d4b49263ff2fc6a2f9"
 
 "js-tokens@^3.0.0 || ^4.0.0":
   version "4.0.0"
