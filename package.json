@@ -27,7 +27,7 @@
   ],
   "dependencies": {
     "@types/node": "*",
-    "babar": "0.2.0",
+    "babar": "0.2.2",
     "image-ssim": "^0.2.0",
     "jpeg-js": "^0.4.1",
     "loud-rejection": "^1.6.0",
