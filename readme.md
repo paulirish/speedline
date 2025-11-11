@@ -7,7 +7,7 @@
 
 The [Navigation Timing API](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_timing_API) provides useful data that can be used to measure the performance of a website. Unfortunately this API has never been good at capturing the actual *user experience*.
 
-The [Speed Index](https://github.com/WPO-Foundation/webpagetest-docs/blob/master/src/metrics/SpeedIndex.md), introduced by [WebpageTest.org](http://www.webpagetest.org/), aims to solve this issue. It measures **how fast the page content is visually displayed**. The current implementation is based on the **Visual Progress from Video Capture** calculation method described on the [Speed Index](https://github.com/WPO-Foundation/webpagetest-docs/blob/master/user/Metrics/SpeedIndex.md) page. The visual progress is calculated by comparing the distance between the histogram of the current frame and the final frame.
+The [Speed Index](https://github.com/catchpoint/WebPageTest.docs/blob/master/src/metrics/SpeedIndex.md), introduced by [WebpageTest.org](http://www.webpagetest.org/), aims to solve this issue. It measures **how fast the page content is visually displayed**. The current implementation is based on the **Visual Progress from Video Capture** calculation method described on the [Speed Index](https://github.com/catchpoint/WebPageTest.docs/blob/master/src/metrics/SpeedIndex.md) page. The visual progress is calculated by comparing the distance between the histogram of the current frame and the final frame.
 
 Speedline also calculates the **perceptual speed index**, based on the same principal as the original speed index, but it computes the visual progression between frames using the [SSIM](https://en.wikipedia.org/wiki/Structural_similarity) instead of the histogram distance.
 
@@ -36,7 +36,7 @@ $ speedline --help
     $ speedline ./timeline.json
 ```
 
-By default the CLI will output the same output as [visual metrics](https://github.com/WPO-Foundation/visualmetrics). You can use the `--pretty` option if you want to have the histogram.
+By default the CLI will output the same output as [visual metrics](https://github.com/catchpoint/WebPageTest.visual-metrics). You can use the `--pretty` option if you want to have the histogram.
 
 ## The `speedline-core` module
 
