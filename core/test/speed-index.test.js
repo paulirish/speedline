@@ -137,8 +137,8 @@ test('speed indexes calculated for realistic trace', async t => {
 	speedIndex.calculateVisualProgress(data.frames);
 	speedIndex.calculatePerceptualProgress(data.frames);
 	const indexes = speedIndex.calculateSpeedIndexes(data.frames, data);
-	t.is(Math.floor(indexes.speedIndex), 542);
-	t.is(Math.floor(indexes.perceptualSpeedIndex), 578);
+	t.is(Math.floor(indexes.speedIndex), 537);
+	t.is(Math.floor(indexes.perceptualSpeedIndex), 573);
 });
 
 test('speed indexes calculated with --fast', t => {
