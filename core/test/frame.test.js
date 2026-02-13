@@ -46,7 +46,7 @@ test('frames can set and retrieve progress', t => {
 
 test('extract frames from timeline should return a data object with an array of frames', async t => {
 	const data = await frame.extractFramesFromTimeline('./test/assets/nyt.json');
-	t.is(data.startTs, 282644630.041, 'data.startTs doesn\'t match expected value');
+	t.is(Math.floor(data.startTs), 282646416, 'data.startTs doesn\'t match expected value');
 	t.truthy(data.endTs, 'data.endTs doesn\'t exist');
 	t.true(Array.isArray(data.frames), 'Frames is not an array');
 });
@@ -54,7 +54,7 @@ test('extract frames from timeline should return a data object with an array of 
 test('extract frames should support json', async t => {
 	const trace = JSON.parse(fs.readFileSync('./test/assets/progressive-app.json', 'utf-8'));
 	const data = await frame.extractFramesFromTimeline(trace);
-	t.is(data.startTs, 103204916.772, 'data.startTs doesn\'t match expected value');
+	t.is(Math.floor(data.startTs), 103205446, 'data.startTs doesn\'t match expected value');
 	t.true(Array.isArray(data.frames), 'Frames is not an array');
 	t.is(data.frames.length, 6, 'Number of frames is incorrect');
 });

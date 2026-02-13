@@ -111,6 +111,13 @@ function extractFramesFromTimeline(timeline, opts) {
 	/** @type {Array<TraceEvent>} */
 	let events = trace.traceEvents || trace;
 
+	// Try to find navigationStart
+	let navigationStart = null;
+	const navStartEvent = events.find(e => e.name === 'navigationStart');
+	if (navStartEvent) {
+		navigationStart = navStartEvent.ts;
+	}
+
 	let startTs = Number.MAX_VALUE;
 	let endTs = -Number.MAX_VALUE;
 	events.forEach(e => {
@@ -122,7 +129,7 @@ function extractFramesFromTimeline(timeline, opts) {
 		endTs = Math.max(endTs, e.ts);
 	});
 
-	startTs = (opts.timeOrigin || startTs) / 1000;
+	startTs = (opts.timeOrigin || navigationStart || startTs) / 1000;
 	endTs /= 1000;
 
 	/** @type {?string} */
